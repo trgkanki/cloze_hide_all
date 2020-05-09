@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # addon_template v20.5.4i8
 #
@@ -47,9 +47,9 @@ from aqt import mw
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
 
-model_name = u'Cloze (Hide all)'
+model_name = u"Cloze (Hide all)"
 
-czhd_def = '''\
+czhd_def = """\
 <script>
 /* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */
 setTimeout(function() {
@@ -62,9 +62,9 @@ setTimeout(function() {
 /* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */
 </script>
 
-'''
+"""
 
-card_front = '''
+card_front = """
 <style>
 cloze2 {
     display: none;
@@ -78,17 +78,17 @@ cloze2_w {
 }
 </style>
 {{cloze:Text}}
-'''
+"""
 
-card_back = '''
+card_back = """
 {{cloze:Text}}
 {{#Extra}}
 <hr>
 {{Extra}}
 {{/Extra}}
-'''
+"""
 
-card_css = '''
+card_css = """
 .card {
     font-family: Arial;
     font-size: 20px;
@@ -104,11 +104,11 @@ card_css = '''
 cz_hide {
     display: none;
 }
-'''
+"""
 
-hideback_caption = u'Hide others on the back side'
+hideback_caption = u"Hide others on the back side"
 
-hideback_html = '''<style>
+hideback_html = """<style>
 cloze2 {
     display: none;
 }
@@ -160,7 +160,7 @@ var elements = document.querySelectorAll('cloze2, cloze2_w');
 }
 </script>
 
-<button class='cloze2-toggle' onclick='toggle()'>Toogle mask</button>'''
+<button class='cloze2-toggle' onclick='toggle()'>Toogle mask</button>"""
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
 
@@ -171,29 +171,32 @@ var elements = document.querySelectorAll('cloze2, cloze2_w');
 #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+
 def addClozeModel(col):
     models = col.models
     clozeModel = models.new(model_name)
-    clozeModel['type'] = MODEL_CLOZE
+    clozeModel["type"] = MODEL_CLOZE
 
     # Add fields
-    for fieldName in ('Text', 'Extra'):
+    for fieldName in ("Text", "Extra"):
         fld = models.newField(fieldName)
         models.addField(clozeModel, fld)
 
     # Add template
-    template = models.newTemplate('Cloze (Hide all)')
-    template['qfmt'] = card_front
-    template['afmt'] = card_back
-    clozeModel['css'] = card_css
+    template = models.newTemplate("Cloze (Hide all)")
+    template["qfmt"] = card_front
+    template["afmt"] = card_back
+    clozeModel["css"] = card_css
     models.addTemplate(clozeModel, template)
     models.add(clozeModel)
     updateClozeModel(col, False)
     return clozeModel
 
 
-warningMsg = ("ClozeHideAll will update its card template. "
-              "Sync your deck to AnkiWeb before pressing OK")
+warningMsg = (
+    "ClozeHideAll will update its card template. "
+    "Sync your deck to AnkiWeb before pressing OK"
+)
 
 
 def updateClozeModel(col, warnUserUpdate=True):
@@ -206,15 +209,18 @@ def updateClozeModel(col, warnUserUpdate=True):
         fld["sticky"] = True
         models.addField(clozeModel, fld)
 
-        template = clozeModel['tmpls'][0]
-        template['afmt'] += "\n{{#%s}}\n%s\n{{/%s}}" % (
-            hideback_caption, hideback_html, hideback_caption)
+        template = clozeModel["tmpls"][0]
+        template["afmt"] += "\n{{#%s}}\n%s\n{{/%s}}" % (
+            hideback_caption,
+            hideback_html,
+            hideback_caption,
+        )
 
         models.save()
 
-    template = clozeModel['tmpls'][0]
-    if czhd_def not in template['afmt']:
-        template['afmt'] = czhd_def + '\n' + template['afmt']
+    template = clozeModel["tmpls"][0]
+    if czhd_def not in template["afmt"]:
+        template["afmt"] = czhd_def + "\n" + template["afmt"]
         models.save()
 
 
@@ -232,19 +238,38 @@ addHook("profileLoaded", registerClozeModel)
 
 def stripClozeHelper(html):
     return re.sub(
-        r"</?(cz_hide|cloze2|cloze2_w)>|" +
-        r"<(cloze2_w|cloze2) class=(\"|')cz-\d+(\"|')>|" +
-        r"<script( class=(\"|')cz-\d+(\"|'))?>_czha\(\d+\)</script>",
+        r"</?(cz_hide|cloze2|cloze2_w)>|"
+        + r"<(cloze2_w|cloze2) class=(\"|')cz-\d+(\"|')>|"
+        + r"<script( class=(\"|')cz-\d+(\"|'))?>_czha\(\d+\)</script>",
         "",
-        html
+        html,
     )
 
 
 _voidElements = {
-    'area', 'base', 'basefont', 'bgsound', 'br', 'col',
-    'command', 'embed', 'frame', 'hr', 'image', 'img', 'input', 'isindex',
-    'keygen', 'link', 'menuitem', 'meta', 'nextid', 'param', 'source',
-    'track', 'wbr'
+    "area",
+    "base",
+    "basefont",
+    "bgsound",
+    "br",
+    "col",
+    "command",
+    "embed",
+    "frame",
+    "hr",
+    "image",
+    "img",
+    "input",
+    "isindex",
+    "keygen",
+    "link",
+    "menuitem",
+    "meta",
+    "nextid",
+    "param",
+    "source",
+    "track",
+    "wbr",
 }
 
 
@@ -268,16 +293,16 @@ def wrapClozeTag(s, clozeId):
     chunks = []
 
     def emitData():
-        data = ''.join(dataCh)
+        data = "".join(dataCh)
         dataCh[:] = []
 
         if not data:
             return
 
-        chunks.append(('data', data))
+        chunks.append(("data", data))
 
     def emitTag():
-        tag = ''.join(tagCh)
+        tag = "".join(tagCh)
         tagCh[:] = []
 
         # Process starting tag & Ending tag
@@ -285,18 +310,18 @@ def wrapClozeTag(s, clozeId):
         tagEndMatch = re.match("<\s*/\s*([a-zA-Z0-9]+)", tag)
 
         if tagStartMatch:
-            chunks.append(('tstart', tag))
+            chunks.append(("tstart", tag))
 
         elif tagEndMatch:
-            chunks.append(('tend', tag))
+            chunks.append(("tend", tag))
 
     for ch in s:
         if mode == PARSE_DATA:
             # Tag start/end -> switch to tag parsing mode
-            if ch == '<':
+            if ch == "<":
                 mode = PARSE_TAG
                 emitData()
-                tagCh.append('<')
+                tagCh.append("<")
 
             # Emit character as-is
             else:
@@ -305,7 +330,7 @@ def wrapClozeTag(s, clozeId):
         elif mode == PARSE_TAG:
             tagCh.append(ch)
 
-            if ch == '>':
+            if ch == ">":
                 mode = PARSE_DATA
                 emitTag()
 
@@ -324,21 +349,20 @@ def wrapClozeTag(s, clozeId):
             newChunks = []
             while i < len(chunks):
                 if (
-                    chunks[i - 2][0] == 'tstart' and
-                    chunks[i - 1][0] == 'data' and
-                    chunks[i - 0][0] == 'tend'
+                    chunks[i - 2][0] == "tstart"
+                    and chunks[i - 1][0] == "data"
+                    and chunks[i - 0][0] == "tend"
                 ):
-                    newChunks.append((
-                        'data',
-                        chunks[i - 2][1] + chunks[i - 1][1] + chunks[i][1]
-                    ))
+                    newChunks.append(
+                        ("data", chunks[i - 2][1] + chunks[i - 1][1] + chunks[i][1])
+                    )
                     hasReduction = True
                     i += 3
                 else:
                     newChunks.append(chunks[i - 2])
                     i += 1
 
-            newChunks.extend(chunks[i - 2:])
+            newChunks.extend(chunks[i - 2 :])
             chunks = newChunks
 
         # Reduce <data><data> --> <data>
@@ -346,61 +370,45 @@ def wrapClozeTag(s, clozeId):
             i = 1
             newChunks = []
             while i < len(chunks):
-                if (
-                    chunks[i - 1][0] == 'data' and
-                    chunks[i - 0][0] == 'data'
-                ):
-                    newChunks.append((
-                        'data',
-                        chunks[i - 1][1] + chunks[i][1]
-                    ))
+                if chunks[i - 1][0] == "data" and chunks[i - 0][0] == "data":
+                    newChunks.append(("data", chunks[i - 1][1] + chunks[i][1]))
                     hasReduction = True
                     i += 2
                 else:
                     newChunks.append(chunks[i - 1])
                     i += 1
 
-            newChunks.extend(chunks[i - 1:])
+            newChunks.extend(chunks[i - 1 :])
             chunks = newChunks
 
         if not hasReduction:
             break
 
-    output.extend([
-        cloze_header + x[1] + cloze_footer if x[0] == 'data' else x[1]
-        for x in chunks
-    ])
+    output.extend(
+        [cloze_header + x[1] + cloze_footer if x[0] == "data" else x[1] for x in chunks]
+    )
 
-    return ''.join(output)
+    return "".join(output)
 
 
 def makeClozeCompatiable(html):
     html = re.sub(
-        r'\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)\}\}',
-        lambda match:
-            '{{c%s::%s}}' %
-            (
-                match.group(1),
-                wrapClozeTag(match.group(2), int(match.group(1)))
-            ),
-        html
+        r"\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)\}\}",
+        lambda match: "{{c%s::%s}}"
+        % (match.group(1), wrapClozeTag(match.group(2), int(match.group(1)))),
+        html,
     )
     html = re.sub(
-        r'\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}',
-        lambda match:
-            '{{c%s::%s::%s}}' %
-            (
-                match.group(1),
-                wrapClozeTag(match.group(2), int(match.group(1))),
-                match.group(4)
-            ),
-        html
+        r"\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}",
+        lambda match: "{{c%s::%s::%s}}"
+        % (
+            match.group(1),
+            wrapClozeTag(match.group(2), int(match.group(1))),
+            match.group(4),
+        ),
+        html,
     )
-    html = re.sub(
-        r'\{\{c(\d+)::!',
-        '{{c\\1::<cz_hide>!</cz_hide>',
-        html
-    )
+    html = re.sub(r"\{\{c(\d+)::!", "{{c\\1::<cz_hide>!</cz_hide>", html)
     return html
 
 
@@ -414,6 +422,7 @@ def updateNote(note):
 
 def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     """Automatically generate overlapping clozes before adding cards"""
+
     def newCallback():
         # self.note may be None when editor isn't yet initialized.
         # ex: entering browser
@@ -431,6 +440,7 @@ Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
 # Batch change node types on card type change
 
+
 def applyClozeFormat(browser, nids):
     mw = browser.mw
     mw.checkpoint("Note type change to cloze (reveal one)")
@@ -447,7 +457,7 @@ def applyClozeFormat(browser, nids):
 
 
 def onChangeModel(self):
-    if self.targetModel['name'] == model_name:
+    if self.targetModel["name"] == model_name:
         applyClozeFormat(self.browser, self.nids)
 
 
