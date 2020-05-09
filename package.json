@@ -1,6 +1,6 @@
 {
   "name": "cloze_hide_all",
-  "version": "20.5.4i8",
+  "version": "20.5.9i105",
   "description": "Cloze (hide all) addon page",
   "scripts": {
     "dev:js": "webpack -w",
