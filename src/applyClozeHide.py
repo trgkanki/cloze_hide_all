@@ -95,6 +95,16 @@ def tokenizeHTML(s):
     return chunks
 
 
+def transform_removeEmptyChunk(chunks):
+    newChunks = []
+    for chunk in chunks:
+        if not chunk[1]:
+            continue
+        newChunks.append(chunk)
+
+    return newChunks
+
+
 def transform_concatAdjacentData(chunks):
     newChunks = []
     for chunk in chunks:
@@ -136,17 +146,17 @@ def transform_rawifyVoidElements(chunks):
     return newChunks
 
 
-def dataWrap(chunks, wrapStart, wrapEnd):
-    newChunks = []
-    for chunk in chunks:
-        if chunk[0] == "raw":
-            newChunks.append(("raw", wrapStart))
-            newChunks.append(chunk)
-            newChunks.append(("raw", wrapEnd))
-        else:
-            newChunks.append(chunk)
+def optimizeChunks(chunks):
+    chunks = transform_rawifyVoidElements(chunks)
+    while True:
+        oldChunks = chunks
+        chunks = transform_concatProperlyClozedTag(chunks)
+        chunks = transform_concatAdjacentData(chunks)
+        chunks = transform_removeEmptyChunk(chunks)
+        if jsonEq(oldChunks, chunks):
+            break
 
-    return newChunks
+    return chunks
 
 
 def jsonEq(o1, o2):
@@ -157,12 +167,6 @@ def jsonEq(o1, o2):
 if __name__ == "__main__":
     segment = 'wow<div><br></div><div><img src="paste-535b9586ebd2de4bc5837f1a5c51de8d95e847b9.png">'
     chunks = tokenizeHTML(segment)
-    chunks = transform_rawifyVoidElements(chunks)
-    while True:
-        oldChunks = chunks
-        chunks = transform_concatProperlyClozedTag(chunks)
-        chunks = transform_concatAdjacentData(chunks)
-        if jsonEq(oldChunks, chunks):
-            break
+    chunks = optimizeChunks(chunks)
 
     print(chunks)

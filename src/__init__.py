@@ -45,6 +45,11 @@ from anki import version
 from anki.consts import MODEL_CLOZE
 from aqt import mw
 
+from .applyClozeHide import (
+    tokenizeHTML,
+    optimizeChunks
+)
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
 
 model_name = u"Cloze (Hide all)"
@@ -246,147 +251,27 @@ def stripClozeHelper(html):
     )
 
 
-_voidElements = {
-    "area",
-    "base",
-    "basefont",
-    "bgsound",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "frame",
-    "hr",
-    "image",
-    "img",
-    "input",
-    "isindex",
-    "keygen",
-    "link",
-    "menuitem",
-    "meta",
-    "nextid",
-    "param",
-    "source",
-    "track",
-    "wbr",
-}
-
-
-def wrapClozeTag(s, clozeId):
+def wrapClozeTag(segment, clozeId):
     """
     Cloze may span across DOM boundary. This ensures that clozed text
     in elements different from starting element to be properly hidden
     by enclosing them by <cloze2>
     """
-    PARSE_DATA = 0
-    PARSE_TAG = 1
-    mode = PARSE_DATA
 
     output = ["<cloze2_w class='cz-%d'></cloze2_w>" % clozeId]
-    dataCh = []
-    tagCh = []
-
     cloze_header = "<cloze2 class='cz-%d'>" % clozeId
     cloze_footer = "</cloze2>"
 
-    chunks = []
+    chunks = tokenizeHTML(segment)
+    chunks = optimizeChunks(chunks)
 
-    def emitData():
-        data = "".join(dataCh)
-        dataCh[:] = []
-
-        if not data:
-            return
-
-        chunks.append(("data", data))
-
-    def emitTag():
-        tag = "".join(tagCh)
-        tagCh[:] = []
-
-        # Process starting tag & Ending tag
-        tagStartMatch = re.match("<\s*([a-zA-Z0-9]+)", tag)
-        tagEndMatch = re.match("<\s*/\s*([a-zA-Z0-9]+)", tag)
-
-        if tagStartMatch:
-            chunks.append(("tstart", tag))
-
-        elif tagEndMatch:
-            chunks.append(("tend", tag))
-
-    for ch in s:
-        if mode == PARSE_DATA:
-            # Tag start/end -> switch to tag parsing mode
-            if ch == "<":
-                mode = PARSE_TAG
-                emitData()
-                tagCh.append("<")
-
-            # Emit character as-is
-            else:
-                dataCh.append(ch)
-
-        elif mode == PARSE_TAG:
-            tagCh.append(ch)
-
-            if ch == ">":
-                mode = PARSE_DATA
-                emitTag()
-
-    if mode == PARSE_DATA:
-        emitData()
-    else:
-        emitTag()
-
-    # Recursive replace
-    while True:
-        hasReduction = False
-
-        # Reduce <tstart><data><tend> --> <data>
-        if len(chunks) >= 3:
-            i = 2
-            newChunks = []
-            while i < len(chunks):
-                if (
-                    chunks[i - 2][0] == "tstart"
-                    and chunks[i - 1][0] == "data"
-                    and chunks[i - 0][0] == "tend"
-                ):
-                    newChunks.append(
-                        ("data", chunks[i - 2][1] + chunks[i - 1][1] + chunks[i][1])
-                    )
-                    hasReduction = True
-                    i += 3
-                else:
-                    newChunks.append(chunks[i - 2])
-                    i += 1
-
-            newChunks.extend(chunks[i - 2 :])
-            chunks = newChunks
-
-        # Reduce <data><data> --> <data>
-        if len(chunks) >= 2:
-            i = 1
-            newChunks = []
-            while i < len(chunks):
-                if chunks[i - 1][0] == "data" and chunks[i - 0][0] == "data":
-                    newChunks.append(("data", chunks[i - 1][1] + chunks[i][1]))
-                    hasReduction = True
-                    i += 2
-                else:
-                    newChunks.append(chunks[i - 1])
-                    i += 1
-
-            newChunks.extend(chunks[i - 1 :])
-            chunks = newChunks
-
-        if not hasReduction:
-            break
-
-    output.extend(
-        [cloze_header + x[1] + cloze_footer if x[0] == "data" else x[1] for x in chunks]
-    )
+    for chunk in chunks:
+        if chunk[0] == 'raw':
+            output.append(cloze_header)
+            output.append(chunk[1])
+            output.append(cloze_footer)
+        else:
+            output.append(chunk[1])
 
     return "".join(output)
 
