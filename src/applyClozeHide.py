@@ -168,5 +168,12 @@ if __name__ == "__main__":
     segment = 'wow<div><br></div><div><img src="paste-535b9586ebd2de4bc5837f1a5c51de8d95e847b9.png">'
     chunks = tokenizeHTML(segment)
     chunks = optimizeChunks(chunks)
-
+    assert len(chunks) == 3
     print(chunks)
+
+    segment = '<i>test</i>'
+    chunks = tokenizeHTML(segment)
+    chunks = optimizeChunks(chunks)
+    assert len(chunks) == 1
+    print(chunks)
+
