@@ -50,13 +50,18 @@ from .applyClozeHide import (
     optimizeChunks
 )
 
+from .updateScriptBlock import (
+    ScriptBlock,
+    removeScriptBlock
+)
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
 
 model_name = u"Cloze (Hide all)"
 
-czhd_def = """\
-<script>
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */
+oldScriptBlockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */'
+
+revealClozeScript = ScriptBlock('revealThis', '''
 setTimeout(function() {
     var clozeBoxes = document.querySelector(".cloze cloze2_w");
     var elements = document.querySelectorAll("cloze2." + clozeBoxes.className);
@@ -64,10 +69,8 @@ setTimeout(function() {
         elements[i].style.display="inline";
     }
 }, 0);
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */
-</script>
+''')
 
-"""
 
 card_front = """
 <style>
@@ -82,6 +85,7 @@ cloze2_w {
     background-color: #ffeba2;
 }
 </style>
+
 {{cloze:Text}}
 """
 
@@ -207,9 +211,12 @@ warningMsg = (
 def updateClozeModel(col, warnUserUpdate=True):
     models = col.models
     clozeModel = mw.col.models.byName(model_name)
+
+    # Add hideback caption
     if hideback_caption not in models.fieldNames(clozeModel):
         if warnUserUpdate and not askUser(warningMsg):
             return
+        warnUserUpdate = False
         fld = models.newField(hideback_caption)
         fld["sticky"] = True
         models.addField(clozeModel, fld)
@@ -224,8 +231,10 @@ def updateClozeModel(col, warnUserUpdate=True):
         models.save()
 
     template = clozeModel["tmpls"][0]
-    if czhd_def not in template["afmt"]:
-        template["afmt"] = czhd_def + "\n" + template["afmt"]
+    templateUpdated = [False]
+    template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, templateUpdated)
+    template["afmt"] = revealClozeScript.apply(template["afmt"], templateUpdated)
+    if templateUpdated[0]:
         models.save()
 
 
