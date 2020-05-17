@@ -53,9 +53,6 @@ from .consts import model_name
 
 addHook("profileLoaded", registerClozeModel)
 
-# Editor
-
-
 def stripClozeHelper(html):
     return re.sub(
         r"</?(cz_hide|cloze2|cloze2_w)>|"
