@@ -71,6 +71,41 @@ setTimeout(function() {
 }, 0);
 ''')
 
+scrollToClozeSiteScript = ScriptBlock('scrollToSize', '''\
+var qFade
+
+window.setTimeout(() => {
+  const $clozes = $('.cloze')
+
+  // Code from https://stackoverflow.com/a/10130707
+  function scrollIntoViewIfNeeded($target) {
+    if ($target.position()) {
+      if ($target.position().top < jQuery(window).scrollTop()){
+        //scroll up
+        $('html,body').scrollTop($target.position().top - 30)
+      }
+      else if (
+        $target.position().top + $target.height() >
+        $(window).scrollTop() + (
+         window.innerHeight || document.documentElement.clientHeight
+        )
+      ) {
+        //scroll down
+        $('html,body').scrollTop(
+          $target.position().top -
+          (window.innerHeight || document.documentElement.clientHeight)
+          + $target.height() + 30
+        )
+      }
+    }
+  }
+  if ($clozes[0]) {
+    // Maybe selector .cloze may select multiple elements?
+    scrollIntoViewIfNeeded($($clozes[0]))
+  }
+}, (qFade | 0) + 100)
+''')
+
 
 card_front = """
 <style>
@@ -232,8 +267,10 @@ def updateClozeModel(col, warnUserUpdate=True):
 
     template = clozeModel["tmpls"][0]
     templateUpdated = [False]
-    template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, templateUpdated)
-    template["afmt"] = revealClozeScript.apply(template["afmt"], templateUpdated)
+    template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, updated=templateUpdated)
+    template["afmt"] = revealClozeScript.apply(template["afmt"], updated=templateUpdated)
+    template["qfmt"] = scrollToClozeSiteScript.apply(template["qfmt"], updated=templateUpdated)
+
     if templateUpdated[0]:
         models.save()
 
