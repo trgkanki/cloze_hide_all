@@ -55,57 +55,16 @@ from .updateScriptBlock import (
     removeScriptBlock
 )
 
+from .utils.resource import readResource
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
 
 model_name = u"Cloze (Hide all)"
 
 oldScriptBlockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */'
 
-revealClozeScript = ScriptBlock('revealThis', '''
-setTimeout(function() {
-    var clozeBoxes = document.querySelector(".cloze cloze2_w");
-    var elements = document.querySelectorAll("cloze2." + clozeBoxes.className);
-    for(var i = 0 ; i < elements.length ; i++) {
-        elements[i].style.display="inline";
-    }
-}, 0);
-''')
-
-scrollToClozeSiteScript = ScriptBlock('scrollToSize', '''\
-var qFade
-
-window.setTimeout(() => {
-  const $clozes = $('.cloze')
-
-  // Code from https://stackoverflow.com/a/10130707
-  function scrollIntoViewIfNeeded($target) {
-    if ($target.position()) {
-      if ($target.position().top < jQuery(window).scrollTop()){
-        //scroll up
-        $('html,body').scrollTop($target.position().top - 30)
-      }
-      else if (
-        $target.position().top + $target.height() >
-        $(window).scrollTop() + (
-         window.innerHeight || document.documentElement.clientHeight
-        )
-      ) {
-        //scroll down
-        $('html,body').scrollTop(
-          $target.position().top -
-          (window.innerHeight || document.documentElement.clientHeight)
-          + $target.height() + 30
-        )
-      }
-    }
-  }
-  if ($clozes[0]) {
-    // Maybe selector .cloze may select multiple elements?
-    scrollIntoViewIfNeeded($($clozes[0]))
-  }
-}, (qFade | 0) + 100)
-''')
-
+revealClozeScript = ScriptBlock('409cac4f6e95b12d', readResource('scriptBlock/revealCurrentCloze.js'))
+scrollToClozeSiteScript = ScriptBlock('1f91af7729e984b8', readResource('scriptBlock/scrollToCurrentCloze.js'))
 
 card_front = """
 <style>
