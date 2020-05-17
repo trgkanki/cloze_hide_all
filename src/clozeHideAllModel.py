@@ -2,13 +2,17 @@ from aqt import mw
 from anki.consts import MODEL_CLOZE
 from aqt.utils import askUser
 
-from .updateScriptBlock import (
+from .markerReplacer import (
     ScriptBlock,
-    removeScriptBlock
+    ReplaceBlock,
+    removeScriptBlock,
+    removeReplaceBlock
 )
 
 from .utils.resource import readResource
 from .consts import model_name
+
+import re
 
 ############################# Templates
 
@@ -16,6 +20,12 @@ oldScriptBlockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */'
 
 revealClozeScript = ScriptBlock('409cac4f6e95b12d', readResource('scriptBlock/revealCurrentCloze.js'))
 scrollToClozeSiteScript = ScriptBlock('1f91af7729e984b8', readResource('scriptBlock/scrollToCurrentCloze.js'))
+
+cloze_css = ReplaceBlock(
+    '/* !-- a81b1bee0481ede2 */\n',
+    '\n/* a81b1bee0481ede2 --! */',
+    readResource('template/clozeHiddenUI/yellowBox.css')
+)
 
 card_front = readResource('template/qSide.html')
 card_back = readResource('template/aSide.html')
@@ -80,6 +90,24 @@ def updateClozeModel(col, warnUserUpdate=True):
     template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, updated=templateUpdated)
     template["afmt"] = revealClozeScript.apply(template["afmt"], updated=templateUpdated)
     template["qfmt"] = scrollToClozeSiteScript.apply(template["qfmt"], updated=templateUpdated)
+
+    # update cloze box related stylings
+    oldQfmt = template['qfmt']
+    template['qfmt'] = removeReplaceBlock(template['qfmt'], 'cloze2 {', '}')
+    template['qfmt'] = removeReplaceBlock(template['qfmt'], 'cloze2_w {', '}')
+    template['qfmt'] = re.sub('<style>\s*</style>', '', template['qfmt'])
+    if oldQfmt != template['qfmt']:
+        templateUpdated[0] = True
+
+    # Apply css of hidden clozes
+    clozeModel["css"] = cloze_css.apply(clozeModel["css"], updated=templateUpdated)
+
+    # Apply css of <cloze2> element (should be hidden by default)
+    try:
+        clozeModel["css"].index('cloze2 {\n')
+    except ValueError:
+        clozeModel["css"] += '\ncloze2 {\n  display: none;\n}'
+        templateUpdated[0] = True
 
     if templateUpdated[0]:
         models.save()

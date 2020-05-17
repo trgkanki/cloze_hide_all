@@ -1,12 +1,8 @@
-class ScriptBlock:
-    def __init__(self, blockHeader, script):
-        blockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */' % blockHeader
-
-        self.blockHeader = blockHeader
+class ReplaceBlock:
+    def __init__(self, startMarker, endMarker, script):
+        self.startMarker = startMarker
+        self.endMarker = endMarker
         self.script = script
-
-        startMarker = '<script>\n%s\n' % blockHeader
-        endMarker = '\n%s\n</script>\n' % blockHeader
         self.blockRaw = '%s%s%s' % (startMarker, self.script, endMarker)
 
     def included(self, targetString):
@@ -14,7 +10,7 @@ class ScriptBlock:
 
     def apply(self, targetString, *, updated=None):
         oldTargetString = targetString
-        targetString = removeScriptBlock(targetString, self.blockHeader)
+        targetString = removeReplaceBlock(targetString, self.startMarker, self.endMarker)
         targetString = targetString + '\n\n' + self.blockRaw
 
         if updated and oldTargetString != targetString:
@@ -23,14 +19,12 @@ class ScriptBlock:
         return targetString
 
 
-def removeScriptBlock(targetString, blockHeader, *, updated=None):
+def removeReplaceBlock(targetString, startMarker, endMarker, *, updated=None):
     oldTargetString = targetString
     while True:
         try:
-            startMarker = '<script>\n%s\n' % blockHeader
-            endMarker = '\n%s\n</script>' % blockHeader
             start = targetString.index(startMarker)
-            end = targetString.index(endMarker)
+            end = targetString.index(endMarker, start + 1)
             targetString = (targetString[:start] + targetString[end + len(endMarker):]).strip()
         except ValueError:
             break
@@ -39,6 +33,20 @@ def removeScriptBlock(targetString, blockHeader, *, updated=None):
         updated[0] = True
 
     return targetString
+
+# Helper function
+
+def ScriptBlock(blockHeader, script):
+    blockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */' % blockHeader
+    startMarker = '<script>\n%s\n' % blockHeader
+    endMarker = '\n%s\n</script>' % blockHeader
+    return ReplaceBlock(startMarker, endMarker, script)
+
+
+def removeScriptBlock(targetString, blockHeader, *, updated=None):
+    startMarker = '<script>\n%s\n' % blockHeader
+    endMarker = '\n%s\n</script>' % blockHeader
+    return removeReplaceBlock(targetString, startMarker, endMarker, updated=updated)
 
 
 if __name__ == "__main__":
