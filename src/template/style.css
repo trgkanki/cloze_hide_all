@@ -1,0 +1,15 @@
+.card {
+    font-family: Arial;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+}
+
+.cloze {
+    font-weight: bold;
+    color: blue;
+}
+
+cz_hide {
+    display: none;
+}

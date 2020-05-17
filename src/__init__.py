@@ -38,134 +38,11 @@ import re
 
 from aqt.editor import Editor
 from aqt.browser import ChangeModel
-from aqt.utils import askUser
 from anki.hooks import addHook, wrap
-from anki import version
 
-from anki.consts import MODEL_CLOZE
-from aqt import mw
-
-from .applyClozeHide import (
-    tokenizeHTML,
-    optimizeChunks
-)
-
-from .updateScriptBlock import (
-    ScriptBlock,
-    removeScriptBlock
-)
-
-from .utils.resource import readResource
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
-
-model_name = u"Cloze (Hide all)"
-
-oldScriptBlockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */'
-
-revealClozeScript = ScriptBlock('409cac4f6e95b12d', readResource('scriptBlock/revealCurrentCloze.js'))
-scrollToClozeSiteScript = ScriptBlock('1f91af7729e984b8', readResource('scriptBlock/scrollToCurrentCloze.js'))
-
-card_front = """
-<style>
-cloze2 {
-    display: none;
-}
-
-cloze2_w {
-    display: inline-block;
-    width: 5em;
-    height: 1em;
-    background-color: #ffeba2;
-}
-</style>
-
-{{cloze:Text}}
-"""
-
-card_back = """
-{{cloze:Text}}
-{{#Extra}}
-<hr>
-{{Extra}}
-{{/Extra}}
-"""
-
-card_css = """
-.card {
-    font-family: Arial;
-    font-size: 20px;
-    color: black;
-    background-color: white;
-}
-
-.cloze {
-    font-weight: bold;
-    color: blue;
-}
-
-cz_hide {
-    display: none;
-}
-"""
-
-hideback_caption = u"Hide others on the back side"
-
-hideback_html = """<style>
-cloze2 {
-    display: none;
-}
-
-cloze2_w {
-    display: inline-block;
-    width: 5em;
-    height: 1em;
-    background-color: #ffeba2;
-}
-
-.cloze cloze2 {
-    display: inline;
-}
-
-.cloze cloze2_w {
-    display: none;
-}
-
-cloze2.reveal-cloze2 {
-    display: inline;
-}
-
-cloze2_w.reveal-cloze2 {
-    display: none;
-}
-
-.cloze2-toggle {
-    -webkit-appearance: none;
-    display: block;
-    font-size: 1.3em;
-    height: 2em;
-    background-color: #ffffff;
-    width: 100%;
-    margin-top: 20px;
-}
-
-.cloze2-toggle:active {
-    background-color: #ffffaa;
-}
-</style>
-
-<script>
-function toggle() {
-var elements = document.querySelectorAll('cloze2, cloze2_w');
-    for(var i = 0 ; i < elements.length ; i++) {
-        elements[i].classList.toggle('reveal-cloze2');
-    }
-}
-</script>
-
-<button class='cloze2-toggle' onclick='toggle()'>Toogle mask</button>"""
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TEMPALTES
+from .applyClozeHide import tokenizeHTML, optimizeChunks
+from .clozeHideAllModel import registerClozeModel
+from .consts import model_name
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -173,73 +50,6 @@ var elements = document.querySelectorAll('cloze2, cloze2_w');
 # Main code
 #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-def addClozeModel(col):
-    models = col.models
-    clozeModel = models.new(model_name)
-    clozeModel["type"] = MODEL_CLOZE
-
-    # Add fields
-    for fieldName in ("Text", "Extra"):
-        fld = models.newField(fieldName)
-        models.addField(clozeModel, fld)
-
-    # Add template
-    template = models.newTemplate("Cloze (Hide all)")
-    template["qfmt"] = card_front
-    template["afmt"] = card_back
-    clozeModel["css"] = card_css
-    models.addTemplate(clozeModel, template)
-    models.add(clozeModel)
-    updateClozeModel(col, False)
-    return clozeModel
-
-
-warningMsg = (
-    "ClozeHideAll will update its card template. "
-    "Sync your deck to AnkiWeb before pressing OK"
-)
-
-
-def updateClozeModel(col, warnUserUpdate=True):
-    models = col.models
-    clozeModel = mw.col.models.byName(model_name)
-
-    # Add hideback caption
-    if hideback_caption not in models.fieldNames(clozeModel):
-        if warnUserUpdate and not askUser(warningMsg):
-            return
-        warnUserUpdate = False
-        fld = models.newField(hideback_caption)
-        fld["sticky"] = True
-        models.addField(clozeModel, fld)
-
-        template = clozeModel["tmpls"][0]
-        template["afmt"] += "\n{{#%s}}\n%s\n{{/%s}}" % (
-            hideback_caption,
-            hideback_html,
-            hideback_caption,
-        )
-
-        models.save()
-
-    template = clozeModel["tmpls"][0]
-    templateUpdated = [False]
-    template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, updated=templateUpdated)
-    template["afmt"] = revealClozeScript.apply(template["afmt"], updated=templateUpdated)
-    template["qfmt"] = scrollToClozeSiteScript.apply(template["qfmt"], updated=templateUpdated)
-
-    if templateUpdated[0]:
-        models.save()
-
-
-def registerClozeModel():
-    """Prepare note type"""
-    if not mw.col.models.byName(model_name):
-        addClozeModel(mw.col)
-    updateClozeModel(mw.col)
-
 
 addHook("profileLoaded", registerClozeModel)
 
@@ -328,8 +138,9 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
 
 Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
-# Batch change node types on card type change
 
+# Support for `batch change node types on card type change` addon
+# TODO: check if anki 2.1 version of this addon exists?
 
 def applyClozeFormat(browser, nids):
     mw = browser.mw
