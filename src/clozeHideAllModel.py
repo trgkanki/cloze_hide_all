@@ -1,14 +1,19 @@
 from aqt import mw
 from anki.consts import MODEL_CLOZE
-from aqt.utils import askUser
+from aqt.utils import askUser, showInfo
 
-from .updateScriptBlock import (
+from .markerReplacer import (
     ScriptBlock,
-    removeScriptBlock
+    ReplaceBlock,
+    removeScriptBlock,
+    removeReplaceBlock
 )
 
 from .utils.resource import readResource
+from .utils.configrw import getConfig
 from .consts import model_name
+
+import re
 
 ############################# Templates
 
@@ -22,6 +27,17 @@ card_back = readResource('template/aSide.html')
 card_css = readResource('template/style.css')
 hideback_caption = u"Hide others on the back side"
 hideback_html = readResource('template/hideback.html')
+
+# Customizable cloze styles
+try:
+    hiddenClozeStyle = getConfig('hiddenClozeStyle')
+    clozeHiddenContent = readResource('template/clozeHiddenUI/%s.css' % hiddenClozeStyle)
+except IOError:
+    showInfo('Cloze (Hide all) - Hidden cloze style %s not exists!' % hiddenClozeStyle)
+    clozeHiddenContent = readResource('template/clozeHiddenUI/yellowBox.css')
+
+cloze_css = ReplaceBlock('/* !-- a81b1bee0481ede2 */\n', '\n/* a81b1bee0481ede2 --! */', clozeHiddenContent)
+
 
 ###################################################################
 
@@ -80,6 +96,31 @@ def updateClozeModel(col, warnUserUpdate=True):
     template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, updated=templateUpdated)
     template["afmt"] = revealClozeScript.apply(template["afmt"], updated=templateUpdated)
     template["qfmt"] = scrollToClozeSiteScript.apply(template["qfmt"], updated=templateUpdated)
+
+    # update cloze box related stylings
+    oldQfmt = template['qfmt']
+    template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2 {', '}')
+    template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2_w {', '}')
+    template['qfmt'] = re.sub('<style>\s*</style>', '', template['qfmt'])
+    if oldQfmt != template['qfmt']:
+        templateUpdated[0] = True
+
+    oldAfmt = template['afmt']
+    template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2 {', '}')
+    template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2_w {', '}')
+    template['afmt'] = re.sub('<style>\s*</style>', '', template['afmt'])
+    if oldAfmt != template['afmt']:
+        templateUpdated[0] = True
+
+    # Apply css of hidden clozes
+    clozeModel["css"] = cloze_css.apply(clozeModel["css"], updated=templateUpdated)
+
+    # Apply css of <cloze2> element (should be hidden by default)
+    try:
+        clozeModel["css"].index('cloze2 {\n')
+    except ValueError:
+        clozeModel["css"] += '\ncloze2 {\n  display: none;\n}'
+        templateUpdated[0] = True
 
     if templateUpdated[0]:
         models.save()
