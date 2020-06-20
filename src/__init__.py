@@ -55,8 +55,8 @@ addHook("profileLoaded", registerClozeModel)
 
 def stripClozeHelper(html):
     return re.sub(
-        r"</?(cz_hide|cloze2|cloze2_w)>|"
-        + r"<(cloze2_w|cloze2) class=(\"|')cz-\d+(\"|')>|"
+        r"</?(cz_hide|cloze2|cloze2_w)[^>]*?>|"
+        + r"<(cloze2_w|cloze2)[^>]*?class=(\"|')cz-\d+(\"|')[^>]*?>|"
         + r"<script( class=(\"|')cz-\d+(\"|'))?>_czha\(\d+\)</script>",
         "",
         html,
