@@ -43,6 +43,7 @@ from anki.hooks import addHook, wrap
 from .applyClozeHide import tokenizeHTML, optimizeChunks
 from .clozeHideAllModel import registerClozeModel
 from .consts import model_name
+from .utils import openChangelog
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
