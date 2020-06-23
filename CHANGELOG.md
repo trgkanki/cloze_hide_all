@@ -2,6 +2,10 @@
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.6.23i103 (2020-06-23)
+
+- Hotfix: cloze custom style not found on linux
+
 ## 20.6.20i63 (2020-06-20)
 
 Fixed packager coe :(
