@@ -1,0 +1,13 @@
+/** Css styling of visible cloze on the back */
+
+cloze2 {
+  display: none;
+}
+
+.cloze cloze2_w {
+  display: none;
+}
+
+.cloze cloze2 {
+  display: inline;
+}
