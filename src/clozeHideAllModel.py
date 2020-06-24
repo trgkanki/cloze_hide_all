@@ -37,7 +37,7 @@ except IOError:
     clozeHiddenContent = readResource('template/clozeHiddenUI/yellowBox.css')
 
 clozeFrontCSS = readResource('template/clozeFront.css')
-cloze_css = ReplaceBlock(
+clozeHideAllBlock = ReplaceBlock(
     '/* !-- a81b1bee0481ede2 */\n',
     '\n/* a81b1bee0481ede2 --! */',
     clozeHiddenContent + clozeFrontCSS
@@ -106,32 +106,39 @@ def updateClozeModel(col, warnUserUpdate=True):
     oldQfmt = template['qfmt']
     template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2 {', '}')
     template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2_w {', '}')
-    template["qfmt"] = removeReplaceBlock(template['qfmt'], cloze_css.startMarker, cloze_css.endMarker)
+    template["qfmt"] = removeReplaceBlock(template['qfmt'], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
     template['qfmt'] = re.sub('<style>\s*</style>', '', template['qfmt'])
     template['qfmt'] = template['qfmt'].strip()
-    template['qfmt'] += '\n<style>\n%s\n</style>' % cloze_css.blockRaw
-    template['qfmt'] = re.sub(r'\n{2,}', '\n', template['qfmt'])
-
+    template['qfmt'] += '\n<style>\n%s\n</style>' % clozeHideAllBlock.blockRaw
+    template['qfmt'] = re.sub(r'\n{3,}', '\n\n', template['qfmt'])
     if oldQfmt != template['qfmt']:
         templateUpdated[0] = True
 
     oldAfmt = template['afmt']
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2 {', '}')
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2_w {', '}')
+    template['afmt'] = removeReplaceBlock(template['afmt'], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
     template['afmt'] = re.sub('<style>\s*</style>', '', template['afmt'])
-    template['afmt'] = removeReplaceBlock(template['afmt'], cloze_css.startMarker, cloze_css.endMarker)
-    template['afmt'] = template['afmt'].replace(
-        '{{#%s}}\n' % hideback_caption,
-        '{{#%s}}\n<style>\n%s\n</style>\n' % (hideback_caption, cloze_css.blockRaw),
-    )
-    template['afmt'] = re.sub(r'\n{2,}', '\n', template['afmt'])
+
+    if ('{{#%s}}\n' % hideback_caption) in template['afmt']:
+        template['afmt'] = template['afmt'].replace(
+            '{{#%s}}\n' % hideback_caption,
+            '{{#%s}}\n<style>\n%s\n</style>\n' % (hideback_caption, clozeHideAllBlock.blockRaw),
+        )
+    else:
+        # User might just have removed '{{#..}}' and '{{/..}}`, so that condition
+        # always evaluates to true and other clozes won't be shown regardless
+        # of {hideback_caption} field.
+        template['afmt'] += '<style>\n%s\n</style>\n' % clozeHideAllBlock.blockRaw
+
+    template['afmt'] = re.sub(r'\n{3,}', '\n\n', template['afmt'])
     if oldAfmt != template['afmt']:
         templateUpdated[0] = True
 
     # Remove cloze css on 'css' section. Cloze hide all related CSS except 'cz-hide'
     # moved to front & back template.
     oldCSS = clozeModel["css"]
-    clozeModel["css"] = removeReplaceBlock(clozeModel["css"], cloze_css.startMarker, cloze_css.endMarker)
+    clozeModel["css"] = removeReplaceBlock(clozeModel["css"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
     clozeModel["css"] = re.sub(r'cloze2 \{(.|\n)*?\}', '', clozeModel['css'])
     clozeModel["css"] = re.sub(r'\n{3,}', '\n\n', clozeModel["css"])
     if oldCSS != clozeModel['css']:
