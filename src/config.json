@@ -1,3 +1,4 @@
 {
-  "hiddenClozeStyle": "yellowBox"
+  "hiddenClozeStyle": "yellowBox",
+  "noModelMigration": false
 }

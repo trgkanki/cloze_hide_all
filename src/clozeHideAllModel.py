@@ -149,6 +149,9 @@ def updateClozeModel(col, warnUserUpdate=True):
 
 
 def registerClozeModel():
+    if getConfig('noModelMigration'):
+        return
+
     """Prepare note type"""
     if not mw.col.models.byName(model_name):
         addClozeModel(mw.col)
