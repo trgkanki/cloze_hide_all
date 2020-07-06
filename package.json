@@ -1,6 +1,6 @@
 {
   "name": "cloze_hide_all",
-  "version": "20.6.24i65",
+  "version": "20.7.6i110",
   "description": "Cloze (hide all) addon page",
   "scripts": {
     "build": "",

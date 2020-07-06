@@ -2,6 +2,11 @@
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.7.6i110 (2020-07-06)
+
+- Added option to always turn on 'Hide others on the back side' option
+- Added option to disable automatic template update/migration, as it seems to effect some people's card styling issues.
+
 ## 20.6.24i65 (2020-06-24)
 
 - Bug hotfix: yellow box on the current cloze, even on the back side
