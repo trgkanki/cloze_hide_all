@@ -14,3 +14,6 @@ Prevent auto-migration of card template/css. Sometimes automatic model migration
 may revert user edits repeatedly. Enable this option to prevent automatic card
 model update.
 
+## alwaysHideback
+
+Always turn on 'Hide others on the back side' option for all cloze cards.

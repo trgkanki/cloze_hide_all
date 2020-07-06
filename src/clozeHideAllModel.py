@@ -78,6 +78,11 @@ def updateClozeModel(col, warnUserUpdate=True):
     models = col.models
     clozeModel = mw.col.models.byName(model_name)
 
+    hideback_block_header = '{{#%s}}\n' % hideback_caption
+    hideback_block_footer = '{{/%s}}\n' % hideback_caption
+    hideback_commented_header = '<!-- (Always) #%s -->\n' % hideback_caption
+    hideback_commented_footer = '<!-- (Always) /%s -->\n' % hideback_caption
+
     # Add hideback caption
     if hideback_caption not in models.fieldNames(clozeModel):
         if warnUserUpdate and not askUser(warningMsg):
@@ -88,10 +93,10 @@ def updateClozeModel(col, warnUserUpdate=True):
         models.addField(clozeModel, fld)
 
         template = clozeModel["tmpls"][0]
-        template["afmt"] += "\n{{#%s}}\n%s\n{{/%s}}" % (
-            hideback_caption,
+        template["afmt"] += "\n%s%s%s" % (
+            hideback_block_header,
             hideback_html,
-            hideback_caption,
+            hideback_block_footer,
         )
 
         models.save()
@@ -115,15 +120,22 @@ def updateClozeModel(col, warnUserUpdate=True):
         templateUpdated[0] = True
 
     oldAfmt = template['afmt']
+
+    if getConfig('alwaysHideback'):
+        template['afmt'] = (template['afmt']
+            .replace(hideback_commented_header, hideback_block_header)
+            .replace(hideback_commented_footer, hideback_block_footer)
+        )
+
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2 {', '}')
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2_w {', '}')
     template['afmt'] = removeReplaceBlock(template['afmt'], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
     template['afmt'] = re.sub('<style>\s*</style>', '', template['afmt'])
 
-    if ('{{#%s}}\n' % hideback_caption) in template['afmt']:
+    if (hideback_block_header) in template['afmt']:
         template['afmt'] = template['afmt'].replace(
-            '{{#%s}}\n' % hideback_caption,
-            '{{#%s}}\n<style>\n%s\n</style>\n' % (hideback_caption, clozeHideAllBlock.blockRaw),
+            hideback_block_header,
+            '%s<style>\n%s\n</style>\n' % (hideback_block_header, clozeHideAllBlock.blockRaw),
         )
     else:
         # User might just have removed '{{#..}}' and '{{/..}}`, so that condition
@@ -132,6 +144,13 @@ def updateClozeModel(col, warnUserUpdate=True):
         template['afmt'] += '<style>\n%s\n</style>\n' % clozeHideAllBlock.blockRaw
 
     template['afmt'] = re.sub(r'\n{3,}', '\n\n', template['afmt'])
+
+    if getConfig('alwaysHideback'):
+        template['afmt'] = (template['afmt']
+            .replace(hideback_block_header, hideback_commented_header)
+            .replace(hideback_block_footer, hideback_commented_footer)
+        )
+
     if oldAfmt != template['afmt']:
         templateUpdated[0] = True
 
