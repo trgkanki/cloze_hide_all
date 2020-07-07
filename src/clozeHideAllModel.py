@@ -121,11 +121,10 @@ def updateClozeModel(col, warnUserUpdate=True):
 
     oldAfmt = template['afmt']
 
-    if getConfig('alwaysHideback'):
-        template['afmt'] = (template['afmt']
-            .replace(hideback_commented_header, hideback_block_header)
-            .replace(hideback_commented_footer, hideback_block_footer)
-        )
+    template['afmt'] = (template['afmt']
+        .replace(hideback_commented_header, hideback_block_header)
+        .replace(hideback_commented_footer, hideback_block_footer)
+    )
 
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2 {', '}')
     template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2_w {', '}')
