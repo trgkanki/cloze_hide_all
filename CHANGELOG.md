@@ -2,6 +2,15 @@
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.7.21i30 (2020-07-21)
+
+- Proper cloze color on dark mode.
+- Bug fix: Flash of other cloze contents on ankidroid fixed.
+- Bug fix: Proper scrolling to cloze site on ankidroid.
+- Bug fix: Compatibility with old anki version: `addon_meta` error fixed.
+- Bug fix: When setting alwaysHideback option to false from true, template were not being
+  reverted to its original state.
+
 ## 20.7.6i110 (2020-07-06)
 
 - Added option to always turn on 'Hide others on the back side' option
