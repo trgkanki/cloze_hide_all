@@ -12,6 +12,7 @@ from .markerReplacer import (
 from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .consts import model_name
+from .minifyCSS import minifyCSS
 
 import re
 
@@ -179,6 +180,25 @@ def updateClozeModel(col, warnUserUpdate=True):
         clozeModel["css"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
     )
     clozeModel["css"] = re.sub(r"cloze2 \{(.|\n)*?\}", "", clozeModel["css"])
+
+    # add .nightMode .cloze selector if appliable
+    minifiedCSS = minifyCSS(clozeModel["css"])
+    if (
+        ".nightMode" not in minifiedCSS
+        and ".night_mode" not in minifiedCSS
+        and "cloze{font-weight:bold;color:blue}"  # CSS doesn't care night mode
+        in minifiedCSS  # User haven't touched the cloze styling
+    ):
+        clozeModel[
+            "css"
+        ] += """\
+
+
+.nightMode .cloze {
+    color: lightblue;
+}
+"""
+
     clozeModel["css"] = re.sub(r"\n{3,}", "\n\n", clozeModel["css"])
     if oldCSS != clozeModel["css"]:
         templateUpdated[0] = True
