@@ -129,7 +129,10 @@ def updateClozeModel(col, warnUserUpdate=True):
     )
     template["qfmt"] = re.sub("<style>\s*</style>", "", template["qfmt"])
     template["qfmt"] = template["qfmt"].strip()
-    template["qfmt"] += "\n<style>\n%s\n</style>" % clozeHideAllBlock.blockRaw
+    template["qfmt"] = "<style>\n%s\n</style>\n\n%s" % (
+        clozeHideAllBlock.blockRaw,
+        template["qfmt"],
+    )
     template["qfmt"] = re.sub(r"\n{3,}", "\n\n", template["qfmt"])
     if oldQfmt != template["qfmt"]:
         templateUpdated[0] = True
@@ -150,6 +153,7 @@ def updateClozeModel(col, warnUserUpdate=True):
     template["afmt"] = re.sub("<style>\s*</style>", "", template["afmt"])
 
     if (hideback_block_header) in template["afmt"]:
+        # TODO: <style> should preferrably be before the card content. Dunno if this is possible.
         template["afmt"] = template["afmt"].replace(
             hideback_block_header,
             "%s<style>\n%s\n</style>\n"
@@ -159,7 +163,10 @@ def updateClozeModel(col, warnUserUpdate=True):
         # User might just have removed '{{#..}}' and '{{/..}}`, so that condition
         # always evaluates to true and other clozes won't be shown regardless
         # of {hideback_caption} field.
-        template["afmt"] += "<style>\n%s\n</style>\n" % clozeHideAllBlock.blockRaw
+        template["afmt"] = "<style>\n%s\n</style>\n\n%s" % (
+            clozeHideAllBlock.blockRaw,
+            template["afmt"],
+        )
 
     template["afmt"] = re.sub(r"\n{3,}", "\n\n", template["afmt"])
 
