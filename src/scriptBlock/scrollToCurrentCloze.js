@@ -1,34 +1,18 @@
-var qFade, $
+var onShownHook
 
 (function () {
-  function scrollToCurrentCloze () {
-    const $clozes = $('.cloze')
-
-    // Code from https://stackoverflow.com/a/10130707
-    function scrollIntoViewIfNeeded ($target) {
-      if ($target.position()) {
-        if ($target.position().top < $(window).scrollTop()) {
-          // scroll up
-          $('html,body').scrollTop($target.position().top - 30)
-        } else if (
-          $target.position().top + $target.height() >
-          $(window).scrollTop() + (
-            window.innerHeight || document.documentElement.clientHeight
-          )
-        ) {
-          // scroll down
-          $('html,body').scrollTop(
-            $target.position().top -
-            (window.innerHeight || document.documentElement.clientHeight) +
-            $target.height() + 30
-          )
-        }
-      }
-    }
-    if ($clozes[0]) {
-      // Maybe selector .cloze may select multiple elements?
-      scrollIntoViewIfNeeded($($clozes[0]))
-    }
+  function scrollToCloze () {
+    const element = document.getElementsByClassName('cloze')[0]
+    const elementRect = element.getBoundingClientRect()
+    const absoluteElementTop = elementRect.top + window.pageYOffset
+    const middle = absoluteElementTop - (window.innerHeight / 2)
+    window.scrollTo(0, middle)
   }
-  window.setTimeout(scrollToCurrentCloze, (qFade | 0) + 100)
+  if (typeof onShownHook !== 'undefined') {
+    // for Anki 2.1.x
+    onShownHook.push(scrollToCloze)
+  } else {
+    // for AnkiDroid
+    setTimeout(scrollToCloze, 10)
+  }
 })()
