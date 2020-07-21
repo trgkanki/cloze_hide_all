@@ -3,15 +3,17 @@ class ReplaceBlock:
         self.startMarker = startMarker
         self.endMarker = endMarker
         self.script = script
-        self.blockRaw = '%s%s%s' % (startMarker, self.script, endMarker)
+        self.blockRaw = "%s%s%s" % (startMarker, self.script, endMarker)
 
     def included(self, targetString):
         return self.blockRaw in targetString
 
     def apply(self, targetString, *, updated=None):
         oldTargetString = targetString
-        targetString = removeReplaceBlock(targetString, self.startMarker, self.endMarker)
-        targetString = targetString + '\n\n' + self.blockRaw
+        targetString = removeReplaceBlock(
+            targetString, self.startMarker, self.endMarker
+        )
+        targetString = targetString + "\n\n" + self.blockRaw
 
         if updated and oldTargetString != targetString:
             updated[0] = True
@@ -25,7 +27,9 @@ def removeReplaceBlock(targetString, startMarker, endMarker, *, updated=None):
         try:
             start = targetString.index(startMarker)
             end = targetString.index(endMarker, start + 1)
-            targetString = (targetString[:start] + targetString[end + len(endMarker):]).strip()
+            targetString = (
+                targetString[:start] + targetString[end + len(endMarker) :]
+            ).strip()
         except ValueError:
             break
 
@@ -34,29 +38,31 @@ def removeReplaceBlock(targetString, startMarker, endMarker, *, updated=None):
 
     return targetString
 
+
 # Helper function
 
+
 def ScriptBlock(blockHeader, script):
-    blockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */' % blockHeader
-    startMarker = '<script>\n%s\n' % blockHeader
-    endMarker = '\n%s\n</script>' % blockHeader
+    blockHeader = "/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */" % blockHeader
+    startMarker = "<script>\n%s\n" % blockHeader
+    endMarker = "\n%s\n</script>" % blockHeader
     return ReplaceBlock(startMarker, endMarker, script)
 
 
 def removeScriptBlock(targetString, blockHeader, *, updated=None):
-    startMarker = '<script>\n%s\n' % blockHeader
-    endMarker = '\n%s\n</script>' % blockHeader
+    startMarker = "<script>\n%s\n" % blockHeader
+    endMarker = "\n%s\n</script>" % blockHeader
     return removeReplaceBlock(targetString, startMarker, endMarker, updated=updated)
 
 
 if __name__ == "__main__":
-    sb = ScriptBlock('test', '1+1 = 2')
-    segment = 'wow'
+    sb = ScriptBlock("test", "1+1 = 2")
+    segment = "wow"
     assert not sb.included(segment)
 
     # Test: segment applied well
     segment2 = sb.apply(segment)
-    print('segment2', segment2)
+    print("segment2", segment2)
     assert sb.included(segment2)
 
     # Test: updated field when really updated
@@ -74,7 +80,7 @@ if __name__ == "__main__":
     assert not updated[0]
 
     # Test: clean up erroneously added multiple script blocks
-    segment4 = '''wow
+    segment4 = """wow
 <script>
 /* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
 1+1 = 2
@@ -85,7 +91,7 @@ if __name__ == "__main__":
 /* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
 aa
 /* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
-</script>'''
+</script>"""
     segment4 = sb.apply(segment4)
-    print('segment4', segment4)
+    print("segment4", segment4)
     assert sb.apply(segment4) == segment2

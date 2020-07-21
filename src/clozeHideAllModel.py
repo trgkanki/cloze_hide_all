@@ -6,7 +6,7 @@ from .markerReplacer import (
     ScriptBlock,
     ReplaceBlock,
     removeScriptBlock,
-    removeReplaceBlock
+    removeReplaceBlock,
 )
 
 from .utils.resource import readResource
@@ -17,30 +17,36 @@ import re
 
 ############################# Templates
 
-oldScriptBlockHeader = '/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */'
+oldScriptBlockHeader = "/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */"
 
-revealClozeScript = ScriptBlock('409cac4f6e95b12d', readResource('scriptBlock/revealCurrentCloze.js'))
-scrollToClozeSiteScript = ScriptBlock('1f91af7729e984b8', readResource('scriptBlock/scrollToCurrentCloze.js'))
+revealClozeScript = ScriptBlock(
+    "409cac4f6e95b12d", readResource("scriptBlock/revealCurrentCloze.js")
+)
+scrollToClozeSiteScript = ScriptBlock(
+    "1f91af7729e984b8", readResource("scriptBlock/scrollToCurrentCloze.js")
+)
 
-card_front = readResource('template/qSide.html')
-card_back = readResource('template/aSide.html')
-card_css = readResource('template/style.css')
+card_front = readResource("template/qSide.html")
+card_back = readResource("template/aSide.html")
+card_css = readResource("template/style.css")
 hideback_caption = u"Hide others on the back side"
-hideback_html = readResource('template/hideback.html')
+hideback_html = readResource("template/hideback.html")
 
 # Customizable cloze styles
 try:
-    hiddenClozeStyle = getConfig('hiddenClozeStyle')
-    clozeHiddenContent = readResource('template/clozeHiddenUI/%s.css' % hiddenClozeStyle)
+    hiddenClozeStyle = getConfig("hiddenClozeStyle")
+    clozeHiddenContent = readResource(
+        "template/clozeHiddenUI/%s.css" % hiddenClozeStyle
+    )
 except IOError:
-    showInfo('Cloze (Hide all) - Hidden cloze style %s not exists!' % hiddenClozeStyle)
-    clozeHiddenContent = readResource('template/clozeHiddenUI/yellowBox.css')
+    showInfo("Cloze (Hide all) - Hidden cloze style %s not exists!" % hiddenClozeStyle)
+    clozeHiddenContent = readResource("template/clozeHiddenUI/yellowBox.css")
 
-clozeFrontCSS = readResource('template/clozeFront.css')
+clozeFrontCSS = readResource("template/clozeFront.css")
 clozeHideAllBlock = ReplaceBlock(
-    '/* !-- a81b1bee0481ede2 */\n',
-    '\n/* a81b1bee0481ede2 --! */',
-    clozeHiddenContent + clozeFrontCSS
+    "/* !-- a81b1bee0481ede2 */\n",
+    "\n/* a81b1bee0481ede2 --! */",
+    clozeHiddenContent + clozeFrontCSS,
 )
 
 
@@ -78,10 +84,10 @@ def updateClozeModel(col, warnUserUpdate=True):
     models = col.models
     clozeModel = mw.col.models.byName(model_name)
 
-    hideback_block_header = '{{#%s}}\n' % hideback_caption
-    hideback_block_footer = '{{/%s}}\n' % hideback_caption
-    hideback_commented_header = '<!-- (Always) #%s -->\n' % hideback_caption
-    hideback_commented_footer = '<!-- (Always) /%s -->\n' % hideback_caption
+    hideback_block_header = "{{#%s}}\n" % hideback_caption
+    hideback_block_footer = "{{/%s}}\n" % hideback_caption
+    hideback_commented_header = "<!-- (Always) #%s -->\n" % hideback_caption
+    hideback_commented_footer = "<!-- (Always) /%s -->\n" % hideback_caption
 
     # Add hideback caption
     if hideback_caption not in models.fieldNames(clozeModel):
@@ -103,63 +109,78 @@ def updateClozeModel(col, warnUserUpdate=True):
 
     template = clozeModel["tmpls"][0]
     templateUpdated = [False]
-    template["afmt"] = removeScriptBlock(template["afmt"], oldScriptBlockHeader, updated=templateUpdated)
-    template["afmt"] = revealClozeScript.apply(template["afmt"], updated=templateUpdated)
-    template["qfmt"] = scrollToClozeSiteScript.apply(template["qfmt"], updated=templateUpdated)
+    template["afmt"] = removeScriptBlock(
+        template["afmt"], oldScriptBlockHeader, updated=templateUpdated
+    )
+    template["afmt"] = revealClozeScript.apply(
+        template["afmt"], updated=templateUpdated
+    )
+    template["qfmt"] = scrollToClozeSiteScript.apply(
+        template["qfmt"], updated=templateUpdated
+    )
 
     # update cloze box related stylings
-    oldQfmt = template['qfmt']
-    template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2 {', '}')
-    template['qfmt'] = removeReplaceBlock(template['qfmt'], '\ncloze2_w {', '}')
-    template["qfmt"] = removeReplaceBlock(template['qfmt'], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
-    template['qfmt'] = re.sub('<style>\s*</style>', '', template['qfmt'])
-    template['qfmt'] = template['qfmt'].strip()
-    template['qfmt'] += '\n<style>\n%s\n</style>' % clozeHideAllBlock.blockRaw
-    template['qfmt'] = re.sub(r'\n{3,}', '\n\n', template['qfmt'])
-    if oldQfmt != template['qfmt']:
+    oldQfmt = template["qfmt"]
+    template["qfmt"] = removeReplaceBlock(template["qfmt"], "\ncloze2 {", "}")
+    template["qfmt"] = removeReplaceBlock(template["qfmt"], "\ncloze2_w {", "}")
+    template["qfmt"] = removeReplaceBlock(
+        template["qfmt"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
+    )
+    template["qfmt"] = re.sub("<style>\s*</style>", "", template["qfmt"])
+    template["qfmt"] = template["qfmt"].strip()
+    template["qfmt"] += "\n<style>\n%s\n</style>" % clozeHideAllBlock.blockRaw
+    template["qfmt"] = re.sub(r"\n{3,}", "\n\n", template["qfmt"])
+    if oldQfmt != template["qfmt"]:
         templateUpdated[0] = True
 
-    oldAfmt = template['afmt']
+    oldAfmt = template["afmt"]
 
-    template['afmt'] = (template['afmt']
+    template["afmt"] = (
+        template["afmt"]
         .replace(hideback_commented_header, hideback_block_header)
         .replace(hideback_commented_footer, hideback_block_footer)
     )
 
-    template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2 {', '}')
-    template['afmt'] = removeReplaceBlock(template['afmt'], '\ncloze2_w {', '}')
-    template['afmt'] = removeReplaceBlock(template['afmt'], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
-    template['afmt'] = re.sub('<style>\s*</style>', '', template['afmt'])
+    template["afmt"] = removeReplaceBlock(template["afmt"], "\ncloze2 {", "}")
+    template["afmt"] = removeReplaceBlock(template["afmt"], "\ncloze2_w {", "}")
+    template["afmt"] = removeReplaceBlock(
+        template["afmt"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
+    )
+    template["afmt"] = re.sub("<style>\s*</style>", "", template["afmt"])
 
-    if (hideback_block_header) in template['afmt']:
-        template['afmt'] = template['afmt'].replace(
+    if (hideback_block_header) in template["afmt"]:
+        template["afmt"] = template["afmt"].replace(
             hideback_block_header,
-            '%s<style>\n%s\n</style>\n' % (hideback_block_header, clozeHideAllBlock.blockRaw),
+            "%s<style>\n%s\n</style>\n"
+            % (hideback_block_header, clozeHideAllBlock.blockRaw),
         )
     else:
         # User might just have removed '{{#..}}' and '{{/..}}`, so that condition
         # always evaluates to true and other clozes won't be shown regardless
         # of {hideback_caption} field.
-        template['afmt'] += '<style>\n%s\n</style>\n' % clozeHideAllBlock.blockRaw
+        template["afmt"] += "<style>\n%s\n</style>\n" % clozeHideAllBlock.blockRaw
 
-    template['afmt'] = re.sub(r'\n{3,}', '\n\n', template['afmt'])
+    template["afmt"] = re.sub(r"\n{3,}", "\n\n", template["afmt"])
 
-    if getConfig('alwaysHideback'):
-        template['afmt'] = (template['afmt']
+    if getConfig("alwaysHideback"):
+        template["afmt"] = (
+            template["afmt"]
             .replace(hideback_block_header, hideback_commented_header)
             .replace(hideback_block_footer, hideback_commented_footer)
         )
 
-    if oldAfmt != template['afmt']:
+    if oldAfmt != template["afmt"]:
         templateUpdated[0] = True
 
     # Remove cloze css on 'css' section. Cloze hide all related CSS except 'cz-hide'
     # moved to front & back template.
     oldCSS = clozeModel["css"]
-    clozeModel["css"] = removeReplaceBlock(clozeModel["css"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker)
-    clozeModel["css"] = re.sub(r'cloze2 \{(.|\n)*?\}', '', clozeModel['css'])
-    clozeModel["css"] = re.sub(r'\n{3,}', '\n\n', clozeModel["css"])
-    if oldCSS != clozeModel['css']:
+    clozeModel["css"] = removeReplaceBlock(
+        clozeModel["css"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
+    )
+    clozeModel["css"] = re.sub(r"cloze2 \{(.|\n)*?\}", "", clozeModel["css"])
+    clozeModel["css"] = re.sub(r"\n{3,}", "\n\n", clozeModel["css"])
+    if oldCSS != clozeModel["css"]:
         templateUpdated[0] = True
 
     if templateUpdated[0]:
@@ -167,7 +188,7 @@ def updateClozeModel(col, warnUserUpdate=True):
 
 
 def registerClozeModel():
-    if getConfig('noModelMigration'):
+    if getConfig("noModelMigration"):
         return
 
     """Prepare note type"""

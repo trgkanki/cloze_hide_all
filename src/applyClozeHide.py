@@ -171,9 +171,8 @@ if __name__ == "__main__":
     assert len(chunks) == 3
     print(chunks)
 
-    segment = '<i>test</i>'
+    segment = "<i>test</i>"
     chunks = tokenizeHTML(segment)
     chunks = optimizeChunks(chunks)
     assert len(chunks) == 1
     print(chunks)
-

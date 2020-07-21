@@ -54,6 +54,7 @@ from .utils import openChangelog
 
 addHook("profileLoaded", registerClozeModel)
 
+
 def stripClozeHelper(html):
     return re.sub(
         r"</?(cz_hide|cloze2|cloze2_w)[^>]*?>|"
@@ -79,7 +80,7 @@ def wrapClozeTag(segment, clozeId):
     chunks = optimizeChunks(chunks)
 
     for chunk in chunks:
-        if chunk[0] == 'raw':
+        if chunk[0] == "raw":
             output.append(cloze_header)
             output.append(chunk[1])
             output.append(cloze_footer)
@@ -139,6 +140,7 @@ Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
 # Support for `batch change node types on card type change` addon
 # TODO: check if anki 2.1 version of this addon exists?
+
 
 def applyClozeFormat(browser, nids):
     mw = browser.mw
