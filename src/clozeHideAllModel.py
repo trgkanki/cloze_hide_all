@@ -133,6 +133,7 @@ def updateClozeModel(col, warnUserUpdate=True):
         clozeHideAllBlock.blockRaw,
         template["qfmt"],
     )
+    template["qfmt"] = template["qfmt"].replace("\r", "\n")
     template["qfmt"] = re.sub(r"\n{3,}", "\n\n", template["qfmt"])
     if oldQfmt != template["qfmt"]:
         templateUpdated[0] = True
@@ -168,6 +169,7 @@ def updateClozeModel(col, warnUserUpdate=True):
             template["afmt"],
         )
 
+    template["afmt"] = template["afmt"].replace("\r", "\n")
     template["afmt"] = re.sub(r"\n{3,}", "\n\n", template["afmt"])
 
     if getConfig("alwaysHideback"):
@@ -206,6 +208,7 @@ def updateClozeModel(col, warnUserUpdate=True):
 }
 """
 
+    clozeModel["css"] = clozeModel["css"].replace("\r", "\n")
     clozeModel["css"] = re.sub(r"\n{3,}", "\n\n", clozeModel["css"])
     if oldCSS != clozeModel["css"]:
         templateUpdated[0] = True
