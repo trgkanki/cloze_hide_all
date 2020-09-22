@@ -10,7 +10,7 @@ from .markerReplacer import (
 )
 
 from .utils.resource import readResource
-from .utils.configrw import getConfig
+from .utils.configrw import getConfig, setConfig
 from .consts import model_name
 from .minifyCSS import minifyCSS
 
@@ -54,7 +54,7 @@ clozeHideAllBlock = ReplaceBlock(
 ###################################################################
 
 
-def addClozeModel(col):
+def createClozeHideAllModel(col):
     models = col.models
     clozeModel = models.new(model_name)
     clozeModel["type"] = MODEL_CLOZE
@@ -72,6 +72,10 @@ def addClozeModel(col):
     models.addTemplate(clozeModel, template)
     models.add(clozeModel)
     updateClozeModel(col, False)
+
+    # Set alwaysHideBack to true for new users
+    setConfig("alwaysHideback", True)
+
     return clozeModel
 
 
@@ -223,5 +227,5 @@ def registerClozeModel():
 
     """Prepare note type"""
     if not mw.col.models.byName(model_name):
-        addClozeModel(mw.col)
+        createClozeHideAllModel(mw.col)
     updateClozeModel(mw.col)
