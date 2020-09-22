@@ -13,10 +13,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from . import stack
+from contextlib import ContextDecorator
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+class QDlgContainer(ContextDecorator):
+    """ Base class for widget containing other childs """
+
+    def __enter__(self):
+        stack.pushQDlgStack(self)
+        return self
+
+    def __exit__(self, *exc):
+        stack.popQDlgStack(self)
+        return False
+
+    def addChild(self, child):
+        return NotImplemented

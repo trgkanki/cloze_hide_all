@@ -13,10 +13,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+import sys
+from qdlgproxy import (  # type: ignore
+    QDlg,
+    RadioButton,
+)
+from PyQt5.Qt import QApplication
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+@QDlg("Table test")
+def qDlgClass(dlg):
+    def onSelect(v):
+        print("%s selected" % v)
+
+    RadioButton("Male", value=0).onSelect(onSelect)
+    RadioButton("Female", value=1).onSelect(onSelect)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    qDlgClass.run()

@@ -13,10 +13,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+import sys
+from qdlgproxy import QDlg, Text, LineEdit  # type: ignore
+from PyQt5.Qt import QApplication
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+@QDlg("LineEdit test dialog", size=[640, 480])
+def qDlgClass(dlg):
+    Text("Hello world!")
+    LineEdit().onInput(lambda s: print("onInput", s)).onChange(
+        lambda s: print("onChange", s)
+    )
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    qDlgClass.run()

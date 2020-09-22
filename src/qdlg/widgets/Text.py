@@ -13,10 +13,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from ..stack import qDlgStackTop
+from .Style import StylableWidget
 
-from .utils.configrw import getConfig, setConfig
+from PyQt5.Qt import QLabel
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+
+class Text(StylableWidget):
+    def __init__(self, text):
+        super().__init__()
+        self.widget = QLabel(text)
+        qDlgStackTop().addChild(self.widget)
+
+    def wordWrap(self, enabled):
+        self.widget.setWordWrap(enabled)
+        return self

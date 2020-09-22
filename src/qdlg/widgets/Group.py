@@ -13,10 +13,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from ..stack import qDlgStackTop
+from ..utils import addLayoutOrWidget
+from ..container import QDlgContainer
 
-from .utils.configrw import getConfig, setConfig
+from PyQt5.Qt import QGroupBox, QVBoxLayout
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+
+class Group(QDlgContainer):
+    def __init__(self, title: str):
+        self.groupBox = QGroupBox(title)
+        self.layout = QVBoxLayout()
+        self.groupBox.setLayout(self.layout)
+        qDlgStackTop().addChild(self.groupBox)
+
+    def addChild(self, child):
+        addLayoutOrWidget(self.layout, child)
+        return self

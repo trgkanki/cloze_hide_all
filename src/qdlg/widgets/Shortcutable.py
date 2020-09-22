@@ -13,10 +13,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from PyQt5.Qt import QKeySequence
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+class Shortcutable:
+    def shortcut(self, keySequence: str):
+        kSeq = QKeySequence(keySequence)
+        self.widget.setShortcut(kSeq)
+        self.widget.setToolTip(kSeq.toString())
+        return self
+
+    def default(self):
+        self.widget.setDefault(True)
+        return self

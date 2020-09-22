@@ -13,10 +13,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from PyQt5.Qt import QLayout, QWidget
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+def addLayoutOrWidget(layout, child):
+    if isinstance(child, QLayout):
+        layout.addLayout(child)
+    elif isinstance(child, QWidget):
+        layout.addWidget(child)
+    else:
+        raise NotImplementedError
+
+
+def continuationHelper(getter, setter):
+    def _(self, newValue=None):
+        if newValue is None:
+            return getter(self)
+        else:
+            setter(self, newValue)
+            return self
+
+    return _

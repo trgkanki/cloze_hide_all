@@ -13,10 +13,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
 
-from .utils.configrw import getConfig, setConfig
+class StylableWidget:
+    def style(self, style: str):
+        self.widget.setStyleSheet(style)
+        return self
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+
+class StylableLayout:
+    def style(self, style: str):
+        self.layout.setStyleSheet(str)
+        return self

@@ -13,10 +13,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from .makeObservable import makeObservable, unobserved
+from .ObservableBase import isObservable
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+def observable(obj):
+    return makeObservable(obj, parent=None)
+
+
+__all__ = ["observable", "isObservable", "unobserved"]

@@ -13,10 +13,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+import sys
+from qdlgproxy import QDlg, Text, Button  # type: ignore
+from PyQt5.Qt import QApplication, QMessageBox
 
-from .utils.configrw import getConfig, setConfig
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+@QDlg("Test dialog", size=[640, 480])
+def qDlgClass(dlg):
+    Text("Hello world!")
+
+    def onClick():
+        QMessageBox.warning(
+            None, "test msgbox", "content",
+        )
+
+    Button("Hello world!").onClick(onClick)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    qDlgClass.run()

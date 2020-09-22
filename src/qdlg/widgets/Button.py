@@ -13,10 +13,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+from ..stack import qDlgStackTop
+from .Style import StylableWidget
+from .Shortcutable import Shortcutable
 
-from .utils.configrw import getConfig, setConfig
+from PyQt5.Qt import QPushButton, QKeySequence
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+
+class Button(StylableWidget, Shortcutable):
+    def __init__(self, label):
+        super().__init__()
+        self.widget = QPushButton(label)
+        self.widget.setAutoDefault(False)
+        qDlgStackTop().addChild(self.widget)
+
+    def onClick(self, callback):
+        self.widget.clicked.connect(callback)
+        return self

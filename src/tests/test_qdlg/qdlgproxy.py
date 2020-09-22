@@ -13,10 +13,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Always add config.json!!!!
+# flake8: noqa
 
-from .utils.configrw import getConfig, setConfig
+import sys
+import os
 
-a = int(getConfig("t1", 0))
-a += 1
-setConfig("t1", a)
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from qdlg import *  # NOQA
