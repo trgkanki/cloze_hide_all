@@ -108,13 +108,13 @@ def wrapClozeTag(segment, clozeId):
 
 def makeClozeCompatiable(html):
     html = re.sub(
-        r"\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)\}\}",
+        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)\}\}",
         lambda match: "{{c%s::%s}}"
         % (match.group(1), wrapClozeTag(match.group(2), int(match.group(1)))),
         html,
     )
     html = re.sub(
-        r"\{\{c(\d+)::([^!]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}",
+        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}",
         lambda match: "{{c%s::%s::%s}}"
         % (
             match.group(1),
@@ -123,7 +123,7 @@ def makeClozeCompatiable(html):
         ),
         html,
     )
-    html = re.sub(r"\{\{c(\d+)::!", "{{c\\1::<cz_hide>!</cz_hide>", html)
+    html = re.sub(r"\{\{c(\d+)::([!?])", "{{c\\1::<cz_hide>\\2</cz_hide>", html)
     return html
 
 
