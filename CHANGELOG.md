@@ -1,5 +1,10 @@
 # Changelog of cloze_hide_all
 
+In case you're using this addon well, consider supporting me via [patreon](https://www.patreon.com/trgk) :)
+If you encounter any bugs, submit through [Github issues](https://github.com/trgkanki/remaining_time/issues) page.
+
+-----
+
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
 ## 20.7.21i30 (2020-07-21)
