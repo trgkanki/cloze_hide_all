@@ -154,6 +154,19 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
 Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
 
+# Support for better html view on editor
+
+
+def _newOnHtmlEdit(self, field, *, _old):
+    self.note.fields[field] = stripClozeHelper(self.note.fields[field])
+    ret = _old(self, field)
+    self.note.fields[field] = makeClozeCompatiable(self.note.fields[field])
+    return ret
+
+
+Editor._onHtmlEdit = wrap(Editor._onHtmlEdit, _newOnHtmlEdit, "around")
+
+
 # Support for `batch change node types on card type change` addon
 # TODO: check if anki 2.1 version of this addon exists?
 
