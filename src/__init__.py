@@ -55,7 +55,7 @@ from aqt.editor import Editor
 from aqt.browser import ChangeModel
 from anki.hooks import addHook, wrap
 
-from .applyClozeHide import tokenizeHTML, optimizeChunks
+from .clozeHideAllApplier import stripClozeHelper, makeClozeCompatible
 from .clozeHideAllModel import registerClozeModel
 from .consts import model_name
 from .utils import openChangelog
@@ -71,67 +71,11 @@ from .utils import uuid  # duplicate UUID checked here
 addHook("profileLoaded", registerClozeModel)
 
 
-def stripClozeHelper(html):
-    return re.sub(
-        r"</?(cz_hide|cloze2|cloze2_w)[^>]*?>|"
-        + r"<(cloze2_w|cloze2)[^>]*?class=(\"|')cz-\d+(\"|')[^>]*?>|"
-        + r"<script( class=(\"|')cz-\d+(\"|'))?>_czha\(\d+\)</script>",
-        "",
-        html,
-    )
-
-
-def wrapClozeTag(segment, clozeId):
-    """
-    Cloze may span across DOM boundary. This ensures that clozed text
-    in elements different from starting element to be properly hidden
-    by enclosing them by <cloze2>
-    """
-
-    output = ["<cloze2_w class='cz-%d'></cloze2_w>" % clozeId]
-    cloze_header = "<cloze2 class='cz-%d'>" % clozeId
-    cloze_footer = "</cloze2>"
-
-    chunks = tokenizeHTML(segment)
-    chunks = optimizeChunks(chunks)
-
-    for chunk in chunks:
-        if chunk[0] == "raw":
-            output.append(cloze_header)
-            output.append(chunk[1])
-            output.append(cloze_footer)
-        else:
-            output.append(chunk[1])
-
-    return "".join(output)
-
-
-def makeClozeCompatiable(html):
-    html = re.sub(
-        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)\}\}",
-        lambda match: "{{c%s::%s}}"
-        % (match.group(1), wrapClozeTag(match.group(2), int(match.group(1)))),
-        html,
-    )
-    html = re.sub(
-        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}",
-        lambda match: "{{c%s::%s::%s}}"
-        % (
-            match.group(1),
-            wrapClozeTag(match.group(2), int(match.group(1))),
-            match.group(4),
-        ),
-        html,
-    )
-    html = re.sub(r"\{\{c(\d+)::([!?])", "{{c\\1::<cz_hide>\\2</cz_hide>", html)
-    return html
-
-
 def updateNote(note):
     for key in note.keys():
         html = note[key]
         html = stripClozeHelper(html)
-        html = makeClozeCompatiable(html)
+        html = makeClozeCompatible(html)
         note[key] = html
 
 
@@ -160,7 +104,7 @@ Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 def _newOnHtmlEdit(self, field, *, _old):
     self.note.fields[field] = stripClozeHelper(self.note.fields[field])
     ret = _old(self, field)
-    self.note.fields[field] = makeClozeCompatiable(self.note.fields[field])
+    self.note.fields[field] = makeClozeCompatible(self.note.fields[field])
     return ret
 
 
