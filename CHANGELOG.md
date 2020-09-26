@@ -7,6 +7,11 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.9.26i168 (2020-09-27)
+
+- addon related html won't be shown on html edit windows
+- AMBOSS compatibility: new syntax for always-shown closes. `{{c1::?text}}`
+
 ## 20.7.21i30 (2020-07-21)
 
 - Proper cloze color on dark mode.
