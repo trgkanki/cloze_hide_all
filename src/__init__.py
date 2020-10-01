@@ -58,6 +58,8 @@ from anki.hooks import addHook, wrap
 from .clozeHideAllApplier import stripClozeHelper, makeClozeCompatible
 from .clozeHideAllModel import registerClozeModel
 from .consts import model_name
+from .utils.resource import readResource
+from .utils.configrw import getConfig
 from .utils import openChangelog
 from .utils import uuid  # duplicate UUID checked here
 
@@ -79,11 +81,31 @@ def updateNote(note):
         note[key] = html
 
 
+## Hooks
+
+# Hide 'hideback' field on note load
+
+
+def onSetNote(self, note, hide=True, focus=False):
+    if not self.web:
+        return
+
+    if self.note and self.note.model()["name"] == model_name:
+        if getConfig("alwaysHideback"):
+            hidebackJS = readResource("scriptBlock/hideHidebackField.js")
+            self.web.eval(hidebackJS)
+
+
+Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
+
+# Apply CHA code before save
+
+
 def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     """Automatically generate overlapping clozes before adding cards"""
 
     def newCallback():
-        # self.note may be None when editor isn't yet initialized.
+        # self.note may be None when edwitor isn't yet initialized.
         # ex: entering browser
         if self.note and self.note.model()["name"] == model_name:
             updateNote(self.note)
