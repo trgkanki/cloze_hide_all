@@ -102,8 +102,6 @@ Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
 
 
 def beforeSaveNow(self, callback, keepFocus=False, *, _old):
-    """Automatically generate overlapping clozes before adding cards"""
-
     def newCallback():
         # self.note may be None when edwitor isn't yet initialized.
         # ex: entering browser
