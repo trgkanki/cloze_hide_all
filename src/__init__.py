@@ -21,138 +21,17 @@
 # License: GNU AGPL, version 3 or later;
 # See http://www.gnu.org/licenses/agpl.html
 
-# -*- mode: Python ; coding: utf-8 -*-
-#
-# Cloze (Hide All) - v6
-#   Adds a new card type "Cloze (Hide All)", which hides all clozes on its
-#   front and optionally on the back.
-#
-# Changelog
-#  v6: support anki 2.1
-#  v5 : DOM-boundary crossing clozes will be handled properly
-#  .1 : More rubust DOM boundary handling
-#        Compatiable with addon 719871418
-#  v4 : Prefixing cloze content with ! will make it visibile on other clozes.
-#        Other hidden content's size will be fixed. (No automatic update)
-#  .1 : Fixed bug when editing notes (EditCurrent hook, better saveNow hook)
-#       Fixed issues where wrong fields are marked as 'sticky'
-#  v3 : Fixed issues which caused text to disappear on the mac version,
-#        Added option to hide other clozes on the back.
-#  v2 : Support clozes with hint
-#  v1 : Initial release
-#
-# Copyright © 2019 Hyun Woo Park (phu54321@naver.com)
-# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-#
-# Lots of code from
-#   - Cloze overlapper (by Glutaminate)
-#   - Batch Note Editing (by Glutaminate)
-#
 
-import re
+# For interoperability w/ non-anki python environment (ex: nosetests)
+# __init__.py would inject anki-interop code only on Anki environment
 
-from aqt.editor import Editor
-from aqt.browser import ChangeModel
-from anki.hooks import addHook, wrap
+_isAnki = False
+try:
+    import aqt  # This should error on non-anki environment. Quick error fallback
 
-from .clozeHideAllApplier import stripClozeHelper, makeClozeCompatible
-from .clozeHideAllModel import registerClozeModel
-from .consts import model_name
-from .utils.resource import readResource
-from .utils.configrw import getConfig
-from .utils import openChangelog
-from .utils import uuid  # duplicate UUID checked here
+    _isAnki = True
+except ImportError:
+    _isAnki = False
 
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#
-# Main code
-#
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-addHook("profileLoaded", registerClozeModel)
-
-
-def updateNote(note):
-    for key in note.keys():
-        html = note[key]
-        html = stripClozeHelper(html)
-        html = makeClozeCompatible(html)
-        note[key] = html
-
-
-## Hooks
-
-# Hide 'hideback' field on note load
-
-
-def onSetNote(self, note, hide=True, focus=False):
-    if not self.web:
-        return
-
-    if self.note and self.note.model()["name"] == model_name:
-        if getConfig("alwaysHideback"):
-            hidebackJS = readResource("scriptBlock/hideHidebackField.js")
-            self.web.eval(hidebackJS)
-
-
-Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
-
-# Apply CHA code before save
-
-
-def beforeSaveNow(self, callback, keepFocus=False, *, _old):
-    def newCallback():
-        # self.note may be None when editor isn't yet initialized.
-        # ex: entering browser
-        if self.note and self.note.model()["name"] == model_name:
-            updateNote(self.note)
-            if not self.addMode:
-                self.note.flush()
-                self.mw.requireReset()
-        callback()
-
-    return _old(self, newCallback, keepFocus)
-
-
-Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
-
-
-# Support for better html view on editor
-
-
-def _newOnHtmlEdit(self, field, *, _old):
-    self.note.fields[field] = stripClozeHelper(self.note.fields[field])
-    ret = _old(self, field)
-    self.note.fields[field] = makeClozeCompatible(self.note.fields[field])
-    return ret
-
-
-Editor._onHtmlEdit = wrap(Editor._onHtmlEdit, _newOnHtmlEdit, "around")
-
-
-# Support for `batch change node types on card type change` addon
-# TODO: check if anki 2.1 version of this addon exists?
-
-
-def applyClozeFormat(browser, nids):
-    mw = browser.mw
-    mw.checkpoint("Note type change to cloze (reveal one)")
-    mw.progress.start()
-    browser.model.beginReset()
-    for nid in nids:
-        note = mw.col.getNote(nid)
-        updateNote(note)
-        note.flush()
-    browser.model.endReset()
-    mw.requireReset()
-    mw.progress.finish()
-    mw.reset()
-
-
-def onChangeModel(self):
-    if self.targetModel["name"] == model_name:
-        applyClozeFormat(self.browser, self.nids)
-
-
-ChangeModel.accept = wrap(ChangeModel.accept, onChangeModel, "before")
+if _isAnki:
+    from . import main
