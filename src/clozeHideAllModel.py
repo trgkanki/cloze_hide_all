@@ -110,7 +110,7 @@ def updateClozeModel(col, warnUserUpdate=True):
             hideback_block_footer,
         )
 
-        models.save()
+        models.save(clozeModel)
 
     template = clozeModel["tmpls"][0]
     templateUpdated = [False]
@@ -218,7 +218,7 @@ def updateClozeModel(col, warnUserUpdate=True):
         templateUpdated[0] = True
 
     if templateUpdated[0]:
-        models.save()
+        models.save(clozeModel)
 
 
 def registerClozeModel():
