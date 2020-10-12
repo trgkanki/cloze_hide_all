@@ -7,6 +7,13 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.10.12i16 (2020-10-12)
+
+- Feature: `Hide others on the back side` field will be disabled when `alwaysHideback` is on.
+- Fix: CSS being piled up on every Anki run
+- Fix: Compatibility with Anki 2.1.28 : Note type update fixed
+- Typo: *Toogle* mask →  ***Toggle*** mask
+
 ## 20.9.26i168 (2020-09-27)
 
 - addon related html won't be shown on html edit windows
