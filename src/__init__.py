@@ -103,7 +103,7 @@ Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
 
 def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     def newCallback():
-        # self.note may be None when edwitor isn't yet initialized.
+        # self.note may be None when editor isn't yet initialized.
         # ex: entering browser
         if self.note and self.note.model()["name"] == model_name:
             updateNote(self.note)
