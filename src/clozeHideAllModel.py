@@ -45,9 +45,9 @@ except IOError:
 
 clozeFrontCSS = readResource("template/clozeFront.css")
 clozeHideAllBlock = ReplaceBlock(
-    "/* !-- a81b1bee0481ede2 */\n",
-    "\n/* a81b1bee0481ede2 --! */",
-    clozeHiddenContent + clozeFrontCSS,
+    "/* !-- a81b1bee0481ede2 */",
+    "/* a81b1bee0481ede2 --! */",
+    "\n" + clozeHiddenContent + clozeFrontCSS + "\n",
 )
 
 
@@ -126,8 +126,8 @@ def updateClozeModel(col, warnUserUpdate=True):
 
     # update cloze box related stylings
     oldQfmt = template["qfmt"]
-    template["qfmt"] = removeReplaceBlock(template["qfmt"], "\ncloze2 {", "}")
-    template["qfmt"] = removeReplaceBlock(template["qfmt"], "\ncloze2_w {", "}")
+    template["qfmt"] = removeReplaceBlock(template["qfmt"], "cloze2 {", "}")
+    template["qfmt"] = removeReplaceBlock(template["qfmt"], "cloze2_w {", "}")
     template["qfmt"] = removeReplaceBlock(
         template["qfmt"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
     )
@@ -137,7 +137,7 @@ def updateClozeModel(col, warnUserUpdate=True):
         clozeHideAllBlock.blockRaw,
         template["qfmt"],
     )
-    template["qfmt"] = template["qfmt"].replace("\r", "\n")
+    template["qfmt"] = template["qfmt"].replace("\r", "")
     template["qfmt"] = re.sub(r"\n{3,}", "\n\n", template["qfmt"])
     if oldQfmt != template["qfmt"]:
         templateUpdated[0] = True
@@ -150,8 +150,8 @@ def updateClozeModel(col, warnUserUpdate=True):
         .replace(hideback_commented_footer, hideback_block_footer)
     )
 
-    template["afmt"] = removeReplaceBlock(template["afmt"], "\ncloze2 {", "}")
-    template["afmt"] = removeReplaceBlock(template["afmt"], "\ncloze2_w {", "}")
+    template["afmt"] = removeReplaceBlock(template["afmt"], "cloze2 {", "}")
+    template["afmt"] = removeReplaceBlock(template["afmt"], "cloze2_w {", "}")
     template["afmt"] = removeReplaceBlock(
         template["afmt"], clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
     )
@@ -173,7 +173,7 @@ def updateClozeModel(col, warnUserUpdate=True):
             template["afmt"],
         )
 
-    template["afmt"] = template["afmt"].replace("\r", "\n")
+    template["afmt"] = template["afmt"].replace("\r", "")
     template["afmt"] = re.sub(r"\n{3,}", "\n\n", template["afmt"])
 
     if getConfig("alwaysHideback"):
@@ -212,7 +212,7 @@ def updateClozeModel(col, warnUserUpdate=True):
 }
 """
 
-    clozeModel["css"] = clozeModel["css"].replace("\r", "\n")
+    clozeModel["css"] = clozeModel["css"].replace("\r", "")
     clozeModel["css"] = re.sub(r"\n{3,}", "\n\n", clozeModel["css"])
     if oldCSS != clozeModel["css"]:
         templateUpdated[0] = True
