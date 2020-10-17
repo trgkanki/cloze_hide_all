@@ -41,6 +41,10 @@ def createClozeHideAllModel(col):
         fld = models.newField(fieldName)
         models.addField(clozeModel, fld)
 
+    fld = models.newField(hideback_caption)
+    fld["sticky"] = True
+    models.addField(clozeModel, fld)
+
     # Add template
     template = models.newTemplate("Cloze (Hide all)")
     template["qfmt"] = card_front
@@ -56,36 +60,12 @@ def createClozeHideAllModel(col):
     return clozeModel
 
 
-warningMsg = (
-    "ClozeHideAll will update its card template. "
-    "Sync your deck to AnkiWeb before pressing OK"
-)
-
-
 def updateClozeModel(col, warnUserUpdate=True):
     models = col.models
     clozeModel = mw.col.models.byName(model_name)
 
     hideback_block_header = "{{#%s}}\n" % hideback_caption
     hideback_block_footer = "{{/%s}}\n" % hideback_caption
-
-    # Add hideback caption
-    if hideback_caption not in models.fieldNames(clozeModel):
-        if warnUserUpdate and not askUser(warningMsg):
-            return
-        warnUserUpdate = False
-        fld = models.newField(hideback_caption)
-        fld["sticky"] = True
-        models.addField(clozeModel, fld)
-
-        template = clozeModel["tmpls"][0]
-        template["afmt"] += "\n%s%s%s" % (
-            hideback_block_header,
-            hideback_html,
-            hideback_block_footer,
-        )
-
-        models.save(clozeModel)
 
     template = clozeModel["tmpls"][0]
     templateUpdated = [False]
