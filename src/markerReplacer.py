@@ -1,3 +1,6 @@
+from .utils.resource import readResource
+
+
 class ReplaceBlock:
     def __init__(self, startMarker, endMarker, script):
         self.startMarker = startMarker
@@ -42,7 +45,8 @@ def removeReplaceBlock(targetString, startMarker, endMarker, *, updated=None):
 # Helper function
 
 
-def ScriptBlock(blockHeader, script):
+def ScriptBlock(blockHeader, scriptPath):
+    script = readResource("scriptBlock/%s" % scriptPath)
     blockHeader = "/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */" % blockHeader
     startMarker = "<script>\n%s\n" % blockHeader
     endMarker = "\n%s\n</script>" % blockHeader

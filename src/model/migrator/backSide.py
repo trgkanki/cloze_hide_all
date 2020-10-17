@@ -21,9 +21,7 @@ hideback_commented_footer = "<!-- (Always) /%s -->\n" % hideback_caption
 
 oldScriptBlockHeader = "/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */"
 
-revealClozeScript = ScriptBlock(
-    "409cac4f6e95b12d", readResource("scriptBlock/revealCurrentCloze.js")
-)
+revealClozeScript = ScriptBlock("409cac4f6e95b12d", "revealCurrentCloze.js")
 
 
 # Customizable cloze styles

@@ -12,9 +12,7 @@ from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 
 
-scrollToClozeSiteScript = ScriptBlock(
-    "1f91af7729e984b8", readResource("scriptBlock/scrollToCurrentCloze.js")
-)
+scrollToClozeSiteScript = ScriptBlock("1f91af7729e984b8", "scrollToCurrentCloze.js")
 
 # Customizable cloze styles
 try:
