@@ -1,7 +1,10 @@
 {
   "python.linting.enabled": true,
   "cSpell.words": [
-    "jssrc"
+    "afmt",
+    "jssrc",
+    "qfmt",
+    "tmpls"
   ],
   "licenser.license": "AGPLv3"
 }
