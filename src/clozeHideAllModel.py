@@ -12,7 +12,7 @@ from .markerReplacer import (
 from .utils.resource import readResource
 from .utils.configrw import getConfig, setConfig
 from .consts import model_name
-from .minifyCSS import minifyCSS
+from .cssHelper import minifyCSS
 
 import re
 
