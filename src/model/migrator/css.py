@@ -10,31 +10,23 @@ from .utils.markerReplacer import (
 from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 from ...utils.cssHelper import minifyCSS
+from .utils.removeCSSContainingSelector import removeRuleContainingSelectorFromCSS
 
-# Customizable cloze styles
-try:
-    hiddenClozeStyle = getConfig("hiddenClozeStyle")
-    clozeHiddenContent = readResource(
-        "template/clozeHiddenUI/%s.css" % hiddenClozeStyle
-    )
-except IOError:
-    showInfo("Cloze (Hide all) - Hidden cloze style %s not exists!" % hiddenClozeStyle)
-    clozeHiddenContent = readResource("template/clozeHiddenUI/yellowBox.css")
-
-clozeFrontCSS = readResource("template/clozeFront.css")
-hidebackStyleBlock = ReplaceBlock(
-    "/* !-- a81b1bee0481ede2 */",
-    "/* a81b1bee0481ede2 --! */",
-    "\n" + clozeHiddenContent + clozeFrontCSS + "\n",
-)
+from .common import hiddenClozeStyle
 
 
 def migrateModelCSS(css, templateUpdated=[False]):
     oldCSS = css
-    css = removeReplaceBlock(
-        css, hidebackStyleBlock.startMarker, hidebackStyleBlock.endMarker
-    )
-    css = re.sub(r"cloze2 \{(.|\n)*?\}", "", css)
+
+    css = css.replace("\r", "")  # Windows compat
+
+    # Remove obsolete hidebackStyleBlock
+    css = hiddenClozeStyle.remove(css)
+
+    # cloze2 / cloze2_w tag styling is embedded directly in front/back template
+    # remove such styling on css part
+    css = removeRuleContainingSelectorFromCSS(css, "cloze2")
+    css = removeRuleContainingSelectorFromCSS(css, "cloze2_w")
 
     # add .nightMode .cloze selector if appliable
     minifiedCSS = minifyCSS(css)
@@ -52,8 +44,7 @@ def migrateModelCSS(css, templateUpdated=[False]):
 }
 """
 
-    css = css.replace("\r", "")
-    css = re.sub(r"\n{3,}", "\n\n", css)
+    css = re.sub(r"\n{3,}", "\n\n", css)  # normalize multi-line newlines
     if oldCSS != css:
         templateUpdated[0] = True
 

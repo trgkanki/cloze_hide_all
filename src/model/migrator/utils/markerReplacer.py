@@ -14,12 +14,24 @@ class ReplaceBlock:
     def remove(self, targetString):
         return removeReplaceBlock(targetString, self.startMarker, self.endMarker)
 
-    def apply(self, targetString, *, updated=None):
+    def apply(self, targetString, *, updated=None, position="after"):
         oldTargetString = targetString
-        targetString = removeReplaceBlock(
-            targetString, self.startMarker, self.endMarker
-        )
-        targetString = targetString + "\n\n" + self.blockRaw
+
+        try:
+            start = targetString.index(self.startMarker)
+            end = targetString.index(self.endMarker, start + 1)
+            targetString = (
+                targetString[:start]
+                + self.blockRaw
+                + targetString[end + len(self.endMarker) :]
+            )
+        except ValueError:
+            if position == "after":
+                targetString = targetString + "\n\n" + self.blockRaw
+            elif position == "before":
+                targetString = self.blockRaw + "\n\n" + targetString
+            else:
+                raise RuntimeError("Invalid argument %s to position" % position)
 
         if updated and oldTargetString != targetString:
             updated[0] = True

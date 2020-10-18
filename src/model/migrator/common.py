@@ -9,13 +9,16 @@ from .utils.markerReplacer import (
 
 from ...utils.resource import readResource
 from ...utils.configrw import getConfig
-
+from ..consts import hideback_html, hidebackBlockHeader, hidebackBlockFooter
 
 ###############################################################################
 # Script blocks
-revealCurrentClozeScript = ScriptBlock("409cac4f6e95b12d", "revealCurrentCloze.js")
+unused_revealCurrentClozeScriptBlock = ReplaceBlock(
+    "<script\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (409cac4f6e95b12d) --- */\n",
+    "\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (409cac4f6e95b12d) --- */\n</script>",
+    "",
+)  # Exists only for removal of old template clutters.
 scrollToClozeSiteScript = ScriptBlock("1f91af7729e984b8", "scrollToCurrentCloze.js")
-
 
 ###############################################################################
 # Customizable cloze styles
@@ -29,8 +32,15 @@ except IOError:
     clozeHiddenContent = readResource("template/clozeHiddenUI/yellowBox.css")
 
 clozeFrontCSS = readResource("template/clozeFront.css")
-hidebackStyleBlock = ReplaceBlock(
+hiddenClozeStyle = ReplaceBlock(
     "/* !-- a81b1bee0481ede2 */",
     "/* a81b1bee0481ede2 --! */",
     "\n" + clozeHiddenContent + clozeFrontCSS + "\n",
+)
+
+hidebackBlock = ReplaceBlock(
+    hidebackBlockHeader,
+    hidebackBlockFooter,
+    "\n\n<style>\n%s\n%s\n</style>\n\n%s\n\n"
+    % (clozeHiddenContent, clozeFrontCSS, hideback_html),
 )
