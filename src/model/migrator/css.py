@@ -3,7 +3,6 @@ from aqt.utils import showInfo
 
 
 from ...markerReplacer import (
-    ScriptBlock,
     ReplaceBlock,
     removeReplaceBlock,
 )
@@ -23,7 +22,7 @@ except IOError:
     clozeHiddenContent = readResource("template/clozeHiddenUI/yellowBox.css")
 
 clozeFrontCSS = readResource("template/clozeFront.css")
-clozeHideAllBlock = ReplaceBlock(
+hidebackStyleBlock = ReplaceBlock(
     "/* !-- a81b1bee0481ede2 */",
     "/* a81b1bee0481ede2 --! */",
     "\n" + clozeHiddenContent + clozeFrontCSS + "\n",
@@ -33,7 +32,7 @@ clozeHideAllBlock = ReplaceBlock(
 def migrateModelCSS(css, templateUpdated=[False]):
     oldCSS = css
     css = removeReplaceBlock(
-        css, clozeHideAllBlock.startMarker, clozeHideAllBlock.endMarker
+        css, hidebackStyleBlock.startMarker, hidebackStyleBlock.endMarker
     )
     css = re.sub(r"cloze2 \{(.|\n)*?\}", "", css)
 

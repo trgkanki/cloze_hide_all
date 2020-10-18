@@ -11,6 +11,9 @@ class ReplaceBlock:
     def included(self, targetString):
         return self.blockRaw in targetString
 
+    def remove(self, targetString):
+        return removeReplaceBlock(targetString, self.startMarker, self.endMarker)
+
     def apply(self, targetString, *, updated=None):
         oldTargetString = targetString
         targetString = removeReplaceBlock(

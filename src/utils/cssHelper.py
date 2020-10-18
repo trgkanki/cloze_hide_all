@@ -2,7 +2,7 @@ import re
 
 
 # Code from https://stackoverflow.com/questions/222581/python-script-for-minifying-css
-def formatCSS(css, cssWriter):
+def processCSS(css, cssWriter):
     # remove comments - this will break a lot of hacks :-P
     css = re.sub(r"\s*/\*\s*\*/", "$$HACK1$$", css)  # preserve IE<6 comment hack
     css = re.sub(r"/\*[\s\S]*?\*/", "", css)
@@ -54,7 +54,7 @@ def minifyCSS(css):
         else:
             return ""
 
-    return formatCSS(css, cssWriter)
+    return processCSS(css, cssWriter)
 
 
 def prettifyCSS(css):
@@ -68,7 +68,7 @@ def prettifyCSS(css):
         else:
             return ""
 
-    return formatCSS(css, cssWriter)
+    return processCSS(css, cssWriter)
 
 
 if __name__ == "__main__":
