@@ -1,6 +1,6 @@
 from aqt import mw
 from .utils.configrw import getConfig
-from .consts import model_name
+from .model.consts import model_name
 
 from .model.migrator import updateClozeModel
 from .model.create import createClozeHideAllModel

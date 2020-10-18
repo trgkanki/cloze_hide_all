@@ -29,7 +29,7 @@ from anki.hooks import addHook, wrap
 
 from .htmlApplier import stripClozeTags, applyClozeTags
 from .clozeHideAllModel import registerClozeModel
-from .consts import model_name
+from .model.consts import model_name
 from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .utils import openChangelog
