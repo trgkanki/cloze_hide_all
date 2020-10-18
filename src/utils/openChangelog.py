@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from aqt import mw
-from aqt.utils import askUser
+from aqt.utils import askUser, showText, showInfo
 from aqt.utils import openLink
 from aqt.qt import (
     QDesktopServices,
@@ -28,9 +28,8 @@ from anki.utils import noBundledLibs
 
 import os
 
-from .configrw import getCurrentAddonName
+from .configrw import getCurrentAddonName, setConfig
 from .resource import readResource, getResourcePath
-from aqt.utils import showText
 
 
 def getCurrentAddonVersion():
@@ -43,6 +42,23 @@ def showChangelogOnUpdate():
 
     addonMeta = mw.addonManager.addonMeta(addonName)
     if addonMeta.get("human_version", None) != addonVersion:
+        if askUser(
+            """IMPORTANT!!
+
+This addon has a history of breaking user cards during migration steps.\
+If your addon is working well, ***We recommend just pressing YES here***.
+
+But if your addon doesn't, new addon *might* contain a migration to fix\
+your current issue, so we recommend presssing *no* here.
+
+Would you like to prevent addon from auto-migrating your templates?
+"""
+        ):
+            showInfo(
+                "You can always issue migration on addon config. Check out the `noModelMigration` option."
+            )
+            setConfig("noModelMigration", True)
+
         addonMeta["human_version"] = addonVersion
         mw.addonManager.writeAddonMeta(addonName, addonMeta)
 
