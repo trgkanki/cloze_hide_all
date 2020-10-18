@@ -27,7 +27,7 @@ from aqt.editor import Editor
 from aqt.browser import ChangeModel
 from anki.hooks import addHook, wrap
 
-from .clozeHideAllApplier import stripClozeHelper, makeClozeCompatible
+from .htmlApplier import stripClozeTags, applyClozeTags
 from .clozeHideAllModel import registerClozeModel
 from .consts import model_name
 from .utils.resource import readResource
@@ -48,8 +48,8 @@ addHook("profileLoaded", registerClozeModel)
 def updateNote(note):
     for key in note.keys():
         html = note[key]
-        html = stripClozeHelper(html)
-        html = makeClozeCompatible(html)
+        html = stripClozeTags(html)
+        html = applyClozeTags(html)
         note[key] = html
 
 
@@ -90,13 +90,14 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
 Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
 
-# Support for better html view on editor
+#### Hook for HTML edit
 
 
 def _newOnHtmlEdit(self, field, *, _old):
-    self.note.fields[field] = stripClozeHelper(self.note.fields[field])
+    # Temporarily strip CHA-related tags
+    self.note.fields[field] = stripClozeTags(self.note.fields[field])
     ret = _old(self, field)
-    self.note.fields[field] = makeClozeCompatible(self.note.fields[field])
+    self.note.fields[field] = applyClozeTags(self.note.fields[field])
     return ret
 
 
