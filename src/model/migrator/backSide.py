@@ -2,7 +2,7 @@ import re
 from aqt.utils import showInfo
 
 
-from ...markerReplacer import (
+from .utils.markerReplacer import (
     ScriptBlock,
     ReplaceBlock,
     removeScriptBlock,

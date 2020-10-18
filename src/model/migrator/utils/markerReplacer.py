@@ -1,4 +1,4 @@
-from .utils.resource import readResource
+from ....utils.resource import readResource
 
 
 class ReplaceBlock:
