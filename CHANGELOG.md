@@ -7,6 +7,12 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.10.19i72 (2020-10-19)
+
+- Fix: 'Reveal all' button not working
+- Fix: 'Reveal all' button looks more native
+- Feature: addon asks if you want to disable model migration script.
+
 ## 20.10.12i16 (2020-10-12)
 
 - Feature: `Hide others on the back side` field will be disabled when `alwaysHideback` is on.
