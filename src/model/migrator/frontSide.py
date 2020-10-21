@@ -17,8 +17,6 @@ from .common import scrollToClozeSiteScript, hiddenClozeStyle
 def migrateFrontSide(frontSide, templateUpdated=[False]):
     oldFrontSide = frontSide
 
-    frontSide = scrollToClozeSiteScript.apply(frontSide)
-
     # update cloze box related stylings
     frontSide = frontSide.replace("\r", "")
     frontSide = removeReplaceBlock(frontSide, "cloze2 {", "}")
@@ -27,6 +25,9 @@ def migrateFrontSide(frontSide, templateUpdated=[False]):
     frontSide = re.sub("<style>\s*</style>", "", frontSide)
     frontSide = frontSide.strip()
     frontSide = re.sub(r"\n{3,}", "\n\n", frontSide)
+
+    # functions
+    frontSide = scrollToClozeSiteScript.apply(frontSide)
 
     if oldFrontSide != frontSide:
         templateUpdated[0] = True

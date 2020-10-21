@@ -16,6 +16,7 @@ from ..consts import hideback_caption, hidebackBlockHeader, hidebackBlockFooter
 from .common import (
     hidebackBlock,
     hiddenClozeStyle,
+    scrollToClozeSiteScript,
     unused_revealCurrentClozeScriptBlock,
 )
 from .utils.removeCSSContainingSelector import removeCSSRuleContainingSelectorFromHtml
@@ -59,6 +60,9 @@ def migrateBackSide(backSide, templateUpdated=[False]):
     if getConfig("alwaysHideback"):
         backSide = backSide.replace(hidebackBlockHeader, hidebackCommentedHeader)
         backSide = backSide.replace(hidebackBlockFooter, hidebackCommentedFooter)
+
+    # Functions
+    backSide = scrollToClozeSiteScript.apply(backSide)
 
     if oldBackSide != backSide:
         templateUpdated[0] = True
