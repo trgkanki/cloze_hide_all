@@ -14,7 +14,7 @@ from ..consts import hideback_html, hidebackBlockHeader, hidebackBlockFooter
 ###############################################################################
 # Script blocks
 unused_revealCurrentClozeScriptBlock = ReplaceBlock(
-    "<script\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (409cac4f6e95b12d) --- */\n",
+    "<script>\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (409cac4f6e95b12d) --- */\n",
     "\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (409cac4f6e95b12d) --- */\n</script>",
     "",
 )  # Exists only for removal of old template clutters.
