@@ -23,7 +23,7 @@ class ReplaceBlock:
             targetString = (
                 targetString[:start]
                 + self.blockRaw
-                + targetString[end + len(self.endMarker) :]
+                + self.remove(targetString[end + len(self.endMarker) :])
             )
         except ValueError:
             if position == "after":
