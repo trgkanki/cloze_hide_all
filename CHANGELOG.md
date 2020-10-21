@@ -7,6 +7,11 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.10.21i160 (2020-10-21)
+
+- Fix: supports deleted hideback field ( :( )
+- Fix: Scroll to cloze on back side of the card
+
 ## 20.10.19i72 (2020-10-19)
 
 - Fix: 'Reveal all' button not working
