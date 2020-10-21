@@ -12,7 +12,7 @@ def updateClozeModel(col, warnUserUpdate=True):
 
     # update cloze box related stylings
     template["qfmt"] = migrateFrontSide(template["qfmt"], templateUpdated)
-    template["afmt"] = migrateBackSide(template["afmt"], templateUpdated)
+    template["afmt"] = migrateBackSide(clozeModel, template["afmt"], templateUpdated)
     clozeModel["css"] = migrateModelCSS(clozeModel["css"], templateUpdated)
 
     if templateUpdated[0]:

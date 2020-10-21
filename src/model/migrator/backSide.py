@@ -24,8 +24,12 @@ from .utils.removeCSSContainingSelector import removeCSSRuleContainingSelectorFr
 hidebackCommentedHeader = "<!-- (Always) #%s -->\n" % hideback_caption
 hidebackCommentedFooter = "<!-- (Always) /%s -->\n" % hideback_caption
 
+# Anki replaces {{#~~}} to {{^~~}} after the field is removed.
+# THIS IS UNDOCUMENTED FEATURE :(
+hidebackBlockHeaderAfterFieldDelete = "{{^%s}}" % hideback_caption
 
-def migrateBackSide(backSide, templateUpdated=[False]):
+
+def migrateBackSide(model, backSide, templateUpdated=[False]):
     oldBackSide = backSide
 
     # remove legacy script block
@@ -47,6 +51,11 @@ def migrateBackSide(backSide, templateUpdated=[False]):
     backSide = backSide.replace(hidebackCommentedHeader, hidebackBlockHeader)
     backSide = backSide.replace(hidebackCommentedFooter, hidebackBlockFooter)
 
+    # Some user simply have removed hideback field. OMG please.
+    backSide = backSide.replace(
+        hidebackBlockHeaderAfterFieldDelete, hidebackBlockHeader
+    )
+
     if hidebackBlockHeader not in backSide:
         showInfo(
             'Due to migration script refactoring, you cannot just remove "%s"~"%s" block from back template. Use "alwaysHideBack" addon config instead.'
@@ -60,6 +69,12 @@ def migrateBackSide(backSide, templateUpdated=[False]):
     if getConfig("alwaysHideback"):
         backSide = backSide.replace(hidebackBlockHeader, hidebackCommentedHeader)
         backSide = backSide.replace(hidebackBlockFooter, hidebackCommentedFooter)
+
+    # Revert to `{{^` syntax...
+    if not any(fld["name"] == hideback_caption for fld in model["flds"]):
+        backSide = backSide.replace(
+            hidebackBlockHeader, hidebackBlockHeaderAfterFieldDelete
+        )
 
     # Functions
     backSide = scrollToClozeSiteScript.apply(backSide)
