@@ -2,45 +2,56 @@ import re
 
 
 # Code from https://stackoverflow.com/questions/222581/python-script-for-minifying-css
+# modified
+
+regexCommentRule = r"/\*(.|\s)*?\*/"
+regexAtRule = r"@[^{}]*?(;|\{[^}]*\})"
+regexRuleSet = r"([^{}]+)\{([^}]*)\}"
+cssBlockRule = "(\\s|%s|%s|%s)" % (regexCommentRule, regexAtRule, regexRuleSet)
+
+
 def processCSS(css, cssWriter):
-    # remove comments - this will break a lot of hacks :-P
-    css = re.sub(r"\s*/\*\s*\*/", "$$HACK1$$", css)  # preserve IE<6 comment hack
-    css = re.sub(r"/\*[\s\S]*?\*/", "", css)
-    css = css.replace("$$HACK1$$", "/**/")  # preserve IE<6 comment hack
+    output = []
 
-    # url() doesn't need quotes
-    css = re.sub(r'url\((["\'])([^)]*)\1\)', r"url(\2)", css)
+    for block in re.findall(cssBlockRule, css):
+        block = block[0]
+        if block == "\n":
+            output.append("\n")
+            continue
 
-    # spaces may be safely collapsed as generated content will collapse them anyway
-    css = re.sub(r"\s+", " ", css)
+        if re.match(regexCommentRule, block) or re.match(regexAtRule, block):
+            output.append(block)
+            continue
 
-    # shorten collapsable colors: #aabbcc to #abc
-    css = re.sub(r"#([0-9a-f])\1([0-9a-f])\2([0-9a-f])\3(\s|;)", r"#\1\2\3\4", css)
+        # Remove comments in block before processing ruleset
+        blockWithoutComment = re.sub(r"/\*[\s\S]*?\*/", "", block)
+        match = re.match(regexRuleSet, blockWithoutComment)
+        if match:
+            selectorList = match[1]
+            propertyList = match[2]
 
-    # fragment values can loose zeros
-    css = re.sub(r":\s*0(\.\d+([cm]m|e[mx]|in|p[ctx]))\s*;", r":\1;", css)
+            # we don't need spaces around operators
+            selectors = [
+                re.sub(
+                    r"(?<=[\[\(>+=])\s+|\s+(?=[=~^$*|>+\]\)])", r"", selector.strip()
+                )
+                for selector in selectorList.split(",")
+            ]
 
-    outputs = []
+            # order is important, but we still want to discard repetitions
+            properties = []
+            keys = set()
+            for prop in re.findall("(.*?):(.*?)(;|$)", propertyList):
+                key = prop[0].strip().lower()
+                if key not in keys:
+                    keys.add(key)
+                properties.append((key, prop[1].strip()))
 
-    for rule in re.findall(r"([^{]+)\{([^}]*)\}", css):
-        # we don't need spaces around operators
-        selectors = [
-            re.sub(r"(?<=[\[\(>+=])\s+|\s+(?=[=~^$*|>+\]\)])", r"", selector.strip())
-            for selector in rule[0].split(",")
-        ]
+            # output rule if it contains any declarations
+            output.append(block)
+            continue
 
-        # order is important, but we still want to discard repetitions
-        properties = []
-        keys = set()
-        for prop in re.findall("(.*?):(.*?)(;|$)", rule[1]):
-            key = prop[0].strip().lower()
-            if key not in keys:
-                keys.add(key)
-            properties.append((key, prop[1].strip()))
-
-        # output rule if it contains any declarations
-        outputs.append(cssWriter(selectors, properties))
-    return "".join(outputs)
+    return "".join(output)
 
 
 def minifyCSS(css):
@@ -75,6 +86,8 @@ if __name__ == "__main__":
     exampleCSS = """
 /** Css styling of visible cloze on the back */
 
+@import url("_editor_button_styles.css");
+
 cloze2 {
   display: none;
 }
@@ -93,4 +106,5 @@ cloze2 {
 }
 """
     print(minifyCSS(exampleCSS))
-    print(prettifyCSS(exampleCSS))
+    print("----------------------------")
+    print(prettifyCSS(prettifyCSS(prettifyCSS(exampleCSS))))
