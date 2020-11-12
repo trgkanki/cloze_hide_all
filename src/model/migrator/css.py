@@ -15,7 +15,7 @@ from .utils.removeCSSContainingSelector import removeRuleContainingSelectorFromC
 from .common import hiddenClozeStyle
 
 
-def migrateModelCSS(css, templateUpdated=[False]):
+def migrateModelCSS(css, templateUpdated, warnUserUpdate):
     oldCSS = css
 
     css = css.replace("\r", "")  # Windows compat

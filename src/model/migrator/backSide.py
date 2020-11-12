@@ -29,7 +29,7 @@ hidebackCommentedFooter = "<!-- (Always) /%s -->\n" % hideback_caption
 hidebackBlockHeaderAfterFieldDelete = "{{^%s}}" % hideback_caption
 
 
-def migrateBackSide(model, backSide, templateUpdated=[False]):
+def migrateBackSide(model, backSide, templateUpdated, warnUserUpdate):
     oldBackSide = backSide
 
     # remove legacy script block
@@ -57,10 +57,11 @@ def migrateBackSide(model, backSide, templateUpdated=[False]):
     )
 
     if hidebackBlockHeader not in backSide:
-        showInfo(
-            'Due to migration script refactoring, you cannot just remove "%s"~"%s" block from back template. Use "alwaysHideBack" addon config instead.'
-            % (hidebackBlockHeader, hidebackBlockFooter)
-        )
+        if warnUserUpdate:
+            showInfo(
+                'Due to migration script refactoring, you cannot just remove "%s"~"%s" block from back template. Use "alwaysHideBack" addon config instead.'
+                % (hidebackBlockHeader, hidebackBlockFooter)
+            )
 
     backSide = hidebackBlock.apply(backSide)
 

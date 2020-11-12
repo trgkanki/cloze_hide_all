@@ -14,7 +14,7 @@ from ...utils.configrw import getConfig
 from .common import scrollToClozeSiteScript, hiddenClozeStyle
 
 
-def migrateFrontSide(frontSide, templateUpdated=[False]):
+def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
     oldFrontSide = frontSide
 
     # update cloze box related stylings
