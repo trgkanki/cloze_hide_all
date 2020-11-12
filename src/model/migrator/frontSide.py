@@ -11,7 +11,7 @@ from .utils.markerReplacer import (
 from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 
-from .common import scrollToClozeSiteScript, hiddenClozeStyle
+from .common import scrollToClozeSiteScript, hiddenClozeStyle, hiddenClozeStyleBuggy
 
 
 def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
@@ -21,6 +21,7 @@ def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
     frontSide = frontSide.replace("\r", "")
     frontSide = removeReplaceBlock(frontSide, "cloze2 {", "}")
     frontSide = removeReplaceBlock(frontSide, "cloze2_w {", "}")
+    frontSide = hiddenClozeStyleBuggy.remove(frontSide)
     frontSide = hiddenClozeStyle.apply(frontSide, position="before")
     frontSide = re.sub("<style>\s*</style>", "", frontSide)
     frontSide = frontSide.strip()

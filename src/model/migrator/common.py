@@ -32,10 +32,16 @@ except IOError:
     clozeHiddenContent = readResource("template/clozeHiddenUI/yellowBox.css")
 
 clozeFrontCSS = readResource("template/clozeFront.css")
-hiddenClozeStyle = ReplaceBlock(
+hiddenClozeStyleBuggy = ReplaceBlock(
     "/* !-- a81b1bee0481ede2 */",
     "/* a81b1bee0481ede2 --! */",
     "\n" + clozeHiddenContent + clozeFrontCSS + "\n",
+)
+
+hiddenClozeStyle = ReplaceBlock(
+    "<!-- # 24402e41168547b6 -->",
+    "<!-- / 24402e41168547b6 --!>",
+    "\n<style>" + clozeHiddenContent + clozeFrontCSS + "</style>\n",
 )
 
 hidebackBlock = ReplaceBlock(
