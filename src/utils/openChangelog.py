@@ -15,21 +15,12 @@
 
 from aqt import mw
 from aqt.utils import askUser, showText, showInfo
-from aqt.utils import openLink
-from aqt.qt import (
-    QDesktopServices,
-    QUrl,
-    QDialog,
-    QVBoxLayout,
-    QDialogButtonBox,
-    QTextBrowser,
-)
-from anki.utils import noBundledLibs
 
 import os
 
 from .configrw import getCurrentAddonName, setConfig
 from .resource import readResource, getResourcePath
+from .MiniBrowser import MiniBrowser
 
 
 def getCurrentAddonVersion():
@@ -64,17 +55,8 @@ Would you like to prevent addon from auto-migrating your templates?
 
         changelogPath = getResourcePath("CHANGELOG.html")
         if os.path.exists(changelogPath):
-            with noBundledLibs():
-                diag, _ = showText(
-                    readResource("CHANGELOG.html"),
-                    type="html",
-                    title="Changelog",
-                    run=False,
-                    minWidth=800,
-                    minHeight=600,
-                )
-                diag.setParent(None)
-                diag.exec_()
+            dlg = MiniBrowser(None, "CHANGELOG.html")
+            dlg.exec()
 
 
 showChangelogOnUpdate()

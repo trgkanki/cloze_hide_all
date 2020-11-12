@@ -21,17 +21,8 @@
 # License: GNU AGPL, version 3 or later;
 # See http://www.gnu.org/licenses/agpl.html
 
+from .utils import openChangelog
+from .utils import uuid  # duplicate UUID checked here
+from .utils import debugLog  # debug log registered here
 
-# For interoperability w/ non-anki python environment (ex: nosetests)
-# __init__.py would inject anki-interop code only on Anki environment
-
-_isAnki = False
-try:
-    import aqt  # This should error on non-anki environment. Quick error fallback
-
-    _isAnki = True
-except ImportError:
-    _isAnki = False
-
-if _isAnki:
-    from . import main
+from . import main
