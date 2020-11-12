@@ -25,6 +25,8 @@ import re
 
 from aqt.editor import Editor
 from aqt.browser import ChangeModel
+from aqt.reviewer import Reviewer
+
 from anki.hooks import addHook, wrap
 
 from .htmlApplier import stripClozeTags, applyClozeTags
@@ -129,3 +131,16 @@ def onChangeModel(self):
 
 
 ChangeModel.accept = wrap(ChangeModel.accept, onChangeModel, "before")
+
+
+## Support for 'reveal' shortcut
+def newShortuts(self, *, _old):
+    def _():
+        self.web.eval("toggle()")
+
+    shortcuts = _old(self)
+    shortcuts.append((getConfig("shortcutToggleMask", "ctrl+r"), _))
+    return shortcuts
+
+
+Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, newShortuts, "around")

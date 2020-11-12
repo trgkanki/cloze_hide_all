@@ -17,3 +17,7 @@ model update.
 ## alwaysHideback
 
 Always turn on 'Hide others on the back side' option for all cloze cards.
+
+# shortcutToggleMask (default: `"ctrl+r"`)
+
+Shortcut for `Toggle Mask` button.
