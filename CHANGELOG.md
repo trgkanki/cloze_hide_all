@@ -7,6 +7,12 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.11.12i127 (2020-11-12)
+
+- fix: another template bug fixer
+- feat: option to reset broken templates. If your card is broken, try following [this instruction](docs/bad_template/instruction.html).
+  ![example](docs/bad_template/bad_example.png)
+
 ## 20.10.21i160 (2020-10-21)
 
 - Fix: supports deleted hideback field ( :( )
