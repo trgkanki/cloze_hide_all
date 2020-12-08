@@ -424,3 +424,5 @@ dist.zip
 dist_*.zip
 *.ankiaddon
 meta.json
+
+.vscode
