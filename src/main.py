@@ -24,7 +24,6 @@
 import re
 
 from aqt.editor import Editor
-from aqt.browser import ChangeModel
 from aqt.reviewer import Reviewer
 
 from anki.hooks import addHook, wrap
@@ -70,7 +69,11 @@ def onSetNote(self, note, hide=True, focus=False):
             self.web.eval(hidebackJS)
 
 
-Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
+if hasattr(Editor, "set_note"):  # 2.1.46+ fix
+    Editor.set_note = wrap(Editor.set_note, onSetNote, "after")
+    Editor.setNote = Editor.set_note
+else:
+    Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
 
 # Apply CHA code before save
 
@@ -89,7 +92,14 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     return _old(self, newCallback, keepFocus)
 
 
-Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
+if hasattr(Editor, "call_after_note_saved"):  # 2.1.46+ fix
+    Editor.call_after_note_saved = wrap(
+        Editor.call_after_note_saved, beforeSaveNow, "around"
+    )
+    Editor.saveNow = Editor.call_after_note_saved
+
+else:
+    Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
 
 
 #### Hook for HTML edit
@@ -103,34 +113,8 @@ def _newOnHtmlEdit(self, field, *, _old):
     return ret
 
 
+# Fix for 2.1.46+ needed.
 Editor._onHtmlEdit = wrap(Editor._onHtmlEdit, _newOnHtmlEdit, "around")
-
-
-# Support for `batch change node types on card type change` addon
-# TODO: check if anki 2.1 version of this addon exists?
-
-
-def applyClozeFormat(browser, nids):
-    mw = browser.mw
-    mw.checkpoint("Note type change to cloze (reveal one)")
-    mw.progress.start()
-    browser.model.beginReset()
-    for nid in nids:
-        note = mw.col.getNote(nid)
-        updateNote(note)
-        note.flush()
-    browser.model.endReset()
-    mw.requireReset()
-    mw.progress.finish()
-    mw.reset()
-
-
-def onChangeModel(self):
-    if self.targetModel["name"] == model_name:
-        applyClozeFormat(self.browser, self.nids)
-
-
-ChangeModel.accept = wrap(ChangeModel.accept, onChangeModel, "before")
 
 
 ## Support for 'reveal' shortcut
