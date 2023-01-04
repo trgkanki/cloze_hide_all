@@ -59,11 +59,17 @@ def updateNote(note):
 # Hide 'hideback' field on note load
 
 
+def isNoteClozeHideAllType(note):
+    noteModelName = note.model()["name"]
+    extraModelNames = getConfig("clozeHideAllModelNames")
+    return noteModelName == model_name or noteModelName in extraModelNames
+
+
 def onSetNote(self, note, hide=True, focus=False):
     if not self.web:
         return
 
-    if self.note and self.note.note_type()["name"] == model_name:
+    if self.note and isNoteClozeHideAllType(self.note):
         if getConfig("alwaysHideback"):
             hidebackJS = readResource("scriptBlock/hideHidebackField.js")
             self.web.eval(hidebackJS)
@@ -82,7 +88,7 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     def newCallback():
         # self.note may be None when editor isn't yet initialized.
         # ex: entering browser
-        if self.note and self.note.note_type()["name"] == model_name:
+        if self.note and isNoteClozeHideAllType(self.note):
             updateNote(self.note)
             if not self.addMode:
                 self.note.flush()

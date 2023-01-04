@@ -1,5 +1,6 @@
 {
   "hiddenClozeStyle": "yellowBox",
+  "clozeHideAllModelNames": [],
   "noModelMigration": false,
   "alwaysHideback": false,
   "shortcutToggleMask": "ctrl+r"

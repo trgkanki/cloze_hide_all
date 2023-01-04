@@ -8,6 +8,13 @@ Specify what to show for hidden styles. Currently these things are supported
 - yellowBoxShort: somewhat shorter yellow box
 - threeGrayDots: `[...]` in grayish version
 
+## clozeHideAllModelNames
+
+List of model names you'd like "hide all" code to work with. Original model name (`Cloze (Hide all)`) is always included.
+
+- Default: `[]`
+- Example: `["Clone of Cloze (Hide all)"]`
+
 ## noModelMigration
 
 Prevent auto-migration of card template/css. Sometimes automatic model migration
