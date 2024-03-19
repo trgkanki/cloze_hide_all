@@ -8,21 +8,40 @@ from .stripClozeTags import stripClozeTags
 
 
 def applyClozeTags(html):
+    def _(match):
+        clozeNumberString: str = match.group(1)
+        clozeContent: str = match.group(2)
+        clozeCaption: str = match.group(3) or ""
+
+        # Empty cloze - just passthrough
+        if not clozeContent:
+            return "{{c%s::%s%s}}" % (clozeNumberString, clozeContent, clozeCaption)
+
+        # Always-shown cloze - just passthrough
+        if clozeContent[0] in ("!", "?"):
+            clozePrefix = clozeContent[0]
+            clozeContent = clozeContent[1:]
+            return "{{c%s::<cz_hide>%s</cz_hide>%s%s}}" % (
+                clozeNumberString,
+                clozePrefix,
+                clozeContent,
+                clozeCaption,
+            )
+
+        return "{{c%s::%s%s}}" % (
+            clozeNumberString,
+            wrapClozeTag(clozeContent, int(clozeNumberString)),
+            clozeCaption,
+        )
+
     html = re.sub(
-        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)\}\}",
-        lambda match: "{{c%s::%s}}"
-        % (match.group(1), wrapClozeTag(match.group(2), int(match.group(1)))),
+        r"\{\{"  # starting {{
+        r"c(\d+)::"  # c1::
+        r"((?:[^:}]|:[^:}])*?)"  # cloze content
+        r"(::(?:(?:[^:}]|:[^:}])*?))?"  # cloze caption
+        r"\}\}",  # ending "}}"
+        _,
         html,
     )
-    html = re.sub(
-        r"\{\{c(\d+)::([^!?]([^:}]|:[^:}])*?)::(([^:}]|:[^:}])*?)\}\}",
-        lambda match: "{{c%s::%s::%s}}"
-        % (
-            match.group(1),
-            wrapClozeTag(match.group(2), int(match.group(1))),
-            match.group(4),
-        ),
-        html,
-    )
-    html = re.sub(r"\{\{c(\d+)::([!?])", "{{c\\1::<cz_hide>\\2</cz_hide>", html)
+
     return html
