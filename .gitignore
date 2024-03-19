@@ -427,3 +427,6 @@ dist_*.zip
 meta.json
 
 .vscode
+
+# possible ignored file from jsinterop+ branch
+*.min.js
