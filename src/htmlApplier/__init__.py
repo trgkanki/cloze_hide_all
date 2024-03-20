@@ -22,7 +22,16 @@ def applyClozeTags(html):
             if clozeContent[0] in ("!", "?"):
                 clozeRevealCondition = clozeContent[0]
                 clozeContent = clozeContent[1:]
-                break
+
+                # NOTE: this requires special treatment:
+                # People may don't want any model migration,
+                # (`noModelMigration` set to true)
+                # Emit old-style always-shown cloze code for backward compatibility.
+                return "{{c%d::<cz_hide>%s</cz_hide>%s}}" % (
+                    clozeNumber,
+                    clozeRevealCondition,
+                    clozeContent,
+                )
 
             # Cloze number conditional cloze
             # {{c1::<1!content}}  ← show when current cloze number < 1
