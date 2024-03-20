@@ -23,16 +23,16 @@ setTimeout(function () {
     }
   }
 
-  // Show clozes with proper constraints
-  const clozeBoxWithConstraintList = document.querySelectorAll('cloze2_w[data-reveal-constraint]')
-  for (const box of clozeBoxWithConstraintList) {
-    let { revealConstraint, clozeId } = box.dataset
-    revealConstraint = revealConstraint.replace('&gt;', '>')
-    revealConstraint = revealConstraint.replace('&lt;', '<')
+  // Show clozes with proper condition
+  const clozeBoxWithConditionList = document.querySelectorAll('cloze2_w[data-reveal-condition]')
+  for (const box of clozeBoxWithConditionList) {
+    let { revealCondition, clozeId } = box.dataset
+    revealCondition = revealCondition.replace('&gt;', '>')
+    revealCondition = revealCondition.replace('&lt;', '<')
     let shouldReveal = false
 
-    if (revealConstraint === '') shouldReveal = true
-    const m = revealConstraint.match(/^(<|<=|>|>=|==)(\d*)$/)
+    if (revealCondition === '') shouldReveal = true
+    const m = revealCondition.match(/^(<|<=|>|>=|==)(\d*)$/)
     if (m) {
       const comparator = m[1]
       let rhs = NaN

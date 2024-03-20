@@ -6,7 +6,7 @@ import html
 clozeId = random.randint(1, 0xFFFF)
 
 
-def wrapClozeTag(segment, clozeNo, revealConstraint=None):
+def wrapClozeTag(segment, clozeNo, revealCondition=None):
     """
     Cloze may span across DOM boundary. This ensures that clozed text
     in elements different from starting element to be properly hidden
@@ -15,15 +15,13 @@ def wrapClozeTag(segment, clozeNo, revealConstraint=None):
 
     global clozeId
 
-    if revealConstraint is None:
-        dataRevealConstraintAttr = ""
+    if revealCondition is None:
+        dataRevealCondition = ""
     else:
-        dataRevealConstraintAttr = (
-            f" data-reveal-constraint='{html.escape(revealConstraint)}'"
-        )
+        dataRevealCondition = f" data-reveal-condition='{html.escape(revealCondition)}'"
     output = [
         "<cloze2_w class='cz-%d' data-cloze-id='%04x'%s></cloze2_w>"
-        % (clozeNo, clozeId, dataRevealConstraintAttr)
+        % (clozeNo, clozeId, dataRevealCondition)
     ]
     cloze_header = "<cloze2 class='cz-%d czi-%04x'>" % (clozeNo, clozeId % 0xFFFF)
 

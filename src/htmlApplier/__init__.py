@@ -20,7 +20,7 @@ def applyClozeTags(html):
         while True:
             # Always-shown cloze - just passthrough
             if clozeContent[0] in ("!", "?"):
-                clozeConstraint = clozeContent[0]
+                clozeRevealCondition = clozeContent[0]
                 clozeContent = clozeContent[1:]
                 break
 
@@ -30,21 +30,22 @@ def applyClozeTags(html):
                 r"^(" r"(?:(?:<|>|&lt;|&gt;)=?|==)" r"\d*[!?]" r")(.+)$", clozeContent
             )
             if match:
-                clozeConstraint = match.group(1)
+                clozeRevealCondition = match.group(1)
                 clozeContent = match.group(2)
                 break
 
             # other case
-            clozeConstraint = None
+            clozeRevealCondition = None
             break
 
         output = ["{{c%d::" % clozeNumber]
-        if clozeConstraint:
+        if clozeRevealCondition:
             output.append(
-                "<cz_hide class='cz-%d'>%s</cz_hide>" % (clozeNumber, clozeConstraint)
+                "<cz_hide class='cz-%d'>%s</cz_hide>"
+                % (clozeNumber, clozeRevealCondition)
             )
-            clozeConstraint = clozeConstraint[:-1]  # strip last ! or ?
-        output.append(wrapClozeTag(clozeContent, clozeNumber, clozeConstraint))
+            clozeRevealCondition = clozeRevealCondition[:-1]  # strip last ! or ?
+        output.append(wrapClozeTag(clozeContent, clozeNumber, clozeRevealCondition))
         output.append(clozeCaption)
         output.append("}}")
         return "".join(output)
