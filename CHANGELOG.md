@@ -7,6 +7,13 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 24.3.20i71 (2024-03-20)
+
+- (Experimental) conditional clozing. `{{c1::<5!test}}` is visible when
+  `(current cloze number) < 5`.
+
+- Allow alternative model name. Refer to `clozeHideAllModelNames` on addon config.
+
 ## 21.9.11i107 (2021-09-11)
 
 Fixes for 2.1.46+
