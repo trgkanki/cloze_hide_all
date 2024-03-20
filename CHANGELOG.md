@@ -7,6 +7,10 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 24.3.20i73 (2024-03-20)
+
+- Backward compatibility
+
 ## 24.3.20i71 (2024-03-20)
 
 - (Experimental) conditional clozing. `{{c1::<5!test}}` is visible when
