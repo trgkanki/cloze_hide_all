@@ -44,6 +44,12 @@ hiddenClozeStyle = ReplaceBlock(
     "\n<style>" + clozeHiddenContent + clozeFrontCSS + "</style>\n",
 )
 
+revealConditionalBlock = ReplaceBlock(
+    "<script>\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (5c19f7715c0d9480) --- */\n",
+    "\n/* --- DO NOT DELETE OR EDIT THIS SCRIPT (5c19f7715c0d9480) --- */\n</script>",
+    readResource("scriptBlock/revealConditional.js"),
+)
+
 hidebackBlock = ReplaceBlock(
     hidebackBlockHeader,
     hidebackBlockFooter,

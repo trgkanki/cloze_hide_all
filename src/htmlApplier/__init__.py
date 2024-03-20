@@ -17,23 +17,37 @@ def applyClozeTags(html):
         if not clozeContent:
             return "{{c%d::%s%s}}" % (clozeNumber, clozeContent, clozeCaption)
 
-        # Always-shown cloze - just passthrough
-        if clozeContent[0] in ("!", "?"):
-            clozePrefix = clozeContent[0]
-            clozeContent = clozeContent[1:]
-            return "{{c%d::<cz_hide class='cz-%d'>%s</cz_hide>%s%s}}" % (
-                clozeNumber,
-                clozeNumber,
-                clozePrefix,
-                clozeContent,
-                clozeCaption,
-            )
+        while True:
+            # Always-shown cloze - just passthrough
+            if clozeContent[0] in ("!", "?"):
+                clozeConstraint = clozeContent[0]
+                clozeContent = clozeContent[1:]
+                break
 
-        return "{{c%d::%s%s}}" % (
-            clozeNumber,
-            wrapClozeTag(clozeContent, int(clozeNumber)),
-            clozeCaption,
-        )
+            # Cloze number conditional cloze
+            # {{c1::<1!content}}  ← show when current cloze number < 1
+            match = re.match(
+                r"^(" r"(?:(?:<|>|&lt;|&gt;)=?|==)" r"\d*[!?]" r")(.+)$", clozeContent
+            )
+            if match:
+                clozeConstraint = match.group(1)
+                clozeContent = match.group(2)
+                break
+
+            # other case
+            clozeConstraint = None
+            break
+
+        output = ["{{c%d::" % clozeNumber]
+        if clozeConstraint:
+            output.append(
+                "<cz_hide class='cz-%d'>%s</cz_hide>" % (clozeNumber, clozeConstraint)
+            )
+            clozeConstraint = clozeConstraint[:-1]  # strip last ! or ?
+        output.append(wrapClozeTag(clozeContent, clozeNumber, clozeConstraint))
+        output.append(clozeCaption)
+        output.append("}}")
+        return "".join(output)
 
     html = re.sub(
         r"\{\{"  # starting {{

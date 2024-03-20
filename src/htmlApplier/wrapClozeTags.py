@@ -1,16 +1,34 @@
 from .htmlChunker import tokenizeHTML, optimizeChunks
+from .xorshift16 import xorshift16Step
+import random
+import html
+
+clozeId = random.randint(1, 0xFFFF)
 
 
-def wrapClozeTag(segment, clozeId):
+def wrapClozeTag(segment, clozeNo, revealConstraint=None):
     """
     Cloze may span across DOM boundary. This ensures that clozed text
     in elements different from starting element to be properly hidden
     by enclosing them by <cloze2>
     """
 
-    output = ["<cloze2_w class='cz-%d'></cloze2_w>" % clozeId]
-    cloze_header = "<cloze2 class='cz-%d'>" % clozeId
+    global clozeId
+
+    if revealConstraint is None:
+        dataRevealConstraintAttr = ""
+    else:
+        dataRevealConstraintAttr = (
+            f" data-reveal-constraint='{html.escape(revealConstraint)}'"
+        )
+    output = [
+        "<cloze2_w class='cz-%d' data-cloze-id='%04x'%s></cloze2_w>"
+        % (clozeNo, clozeId, dataRevealConstraintAttr)
+    ]
+    cloze_header = "<cloze2 class='cz-%d czi-%04x'>" % (clozeNo, clozeId % 0xFFFF)
+
     cloze_footer = "</cloze2>"
+    clozeId = xorshift16Step(clozeId)
 
     chunks = tokenizeHTML(segment)
     chunks = optimizeChunks(chunks)

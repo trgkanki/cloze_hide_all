@@ -11,7 +11,12 @@ from .utils.markerReplacer import (
 from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 
-from .common import scrollToClozeSiteScript, hiddenClozeStyle, hiddenClozeStyleBuggy
+from .common import (
+    scrollToClozeSiteScript,
+    hiddenClozeStyle,
+    hiddenClozeStyleBuggy,
+    revealConditionalBlock,
+)
 
 
 def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
@@ -28,6 +33,7 @@ def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
     frontSide = re.sub(r"\n{3,}", "\n\n", frontSide)
 
     # functions
+    frontSide = revealConditionalBlock.apply(frontSide)
     frontSide = scrollToClozeSiteScript.apply(frontSide)
 
     if oldFrontSide != frontSide:

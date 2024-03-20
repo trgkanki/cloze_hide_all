@@ -15,6 +15,7 @@ from ...utils.configrw import getConfig
 from ..consts import hideback_caption, hidebackBlockHeader, hidebackBlockFooter
 from .common import (
     hidebackBlock,
+    revealConditionalBlock,
     hiddenClozeStyle,
     scrollToClozeSiteScript,
     unused_revealCurrentClozeScriptBlock,
@@ -50,6 +51,9 @@ def migrateBackSide(model, backSide, templateUpdated, warnUserUpdate):
     # Hideback code applier
     backSide = backSide.replace(hidebackCommentedHeader, hidebackBlockHeader)
     backSide = backSide.replace(hidebackCommentedFooter, hidebackBlockFooter)
+
+    # Conditional reveal
+    backSide = revealConditionalBlock.apply(backSide)
 
     # Some user simply have removed hideback field. OMG please.
     backSide = backSide.replace(
