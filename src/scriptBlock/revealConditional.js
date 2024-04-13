@@ -23,6 +23,15 @@ setTimeout(function () {
     }
   }
 
+  // Reveal current cloze
+  for (const element of document.querySelectorAll('cloze2.cz-' + currentClozeNumber)) {
+    element.classList.add('revealed')
+  }
+  for (const element of document.querySelectorAll('cloze2_w.cz-' + currentClozeNumber)) {
+    element.classList.add('revealed')
+  }
+
+
   // Show clozes with proper condition
   const clozeBoxWithConditionList = document.querySelectorAll('cloze2_w[data-reveal-condition]')
   for (const box of clozeBoxWithConditionList) {
@@ -56,9 +65,9 @@ setTimeout(function () {
       )
     } if (shouldReveal) {
       for (const element of document.querySelectorAll('cloze2.czi-' + clozeId)) {
-        element.style.display = 'inline'
+        element.classList.add('revealed')
       }
-      box.style.display = 'none'
+      box.classList.add('revealed')
     }
   }
 }, 0)

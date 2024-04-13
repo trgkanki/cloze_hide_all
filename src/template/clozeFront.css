@@ -4,10 +4,12 @@ cloze2 {
   display: none;
 }
 
-.cloze cloze2_w {
+.cloze cloze2_w,
+cloze2_w.revealed {
   display: none;
 }
 
-.cloze cloze2 {
+.cloze cloze2,
+cloze2.revealed {
   display: inline;
 }
