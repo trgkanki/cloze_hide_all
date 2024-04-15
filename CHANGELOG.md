@@ -7,6 +7,10 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 24.4.15i49 (2024-04-15)
+
+- Support for 23.10+
+
 ## 24.3.20i73 (2024-03-20)
 
 - Backward compatibility
