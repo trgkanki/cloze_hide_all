@@ -36,7 +36,8 @@ def applyClozeTags(html):
             # Cloze number conditional cloze
             # {{c1::<1!content}}  ← show when current cloze number < 1
             match = re.match(
-                r"^(" r"(?:(?:<|>|&lt;|&gt;)=?|==)" r"\d*[!?]" r")(.+)$", clozeContent
+                r"^(" + r"(?:(?:<|>|&lt;|&gt;)=?|=|==)" + r"\d*[!?]" + r")(.+)$",
+                clozeContent,
             )
             if match:
                 clozeRevealCondition = match.group(1)
