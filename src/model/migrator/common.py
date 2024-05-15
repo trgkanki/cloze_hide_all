@@ -82,5 +82,5 @@ hidebackBlock = ReplaceBlock(
     % (hideback_html),
 )
 updateMediaOnProfileLoad(
-    "_cha_revealHideback.js", readResource("scriptBlock/revealHideBack.js", binary=True)
+    "_cha_revealHideback.js", readResource("assets/revealHideBack.js", binary=True)
 )

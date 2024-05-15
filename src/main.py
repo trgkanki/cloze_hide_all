@@ -71,7 +71,7 @@ def onSetNote(self, note, hide=True, focus=False):
 
     if self.note and isNoteClozeHideAllType(self.note):
         if getConfig("alwaysHideback"):
-            hidebackJS = readResource("scriptBlock/hideHidebackField.js")
+            hidebackJS = readResource("assets/hideHidebackField.js")
             self.web.eval(hidebackJS)
 
 

@@ -78,7 +78,7 @@ gui_hooks.profile_did_open.append(_updateProfileLoadPendingMedias)
 
 def ScriptBlock(identifier, scriptPath, scriptContent=None):
     if scriptContent is None:
-        scriptContent = readResource("scriptBlock/%s" % scriptPath)
+        scriptContent = readResource("assets/%s" % scriptPath)
     if type(scriptContent) is str:
         scriptContent = scriptContent.encode("utf-8")
     updateMediaOnProfileLoad(f"_cha_{scriptPath}", scriptContent)
@@ -91,8 +91,7 @@ def ScriptBlock(identifier, scriptPath, scriptContent=None):
 
 def StyleBlock(identifier, stylePath, styleContent=None):
     if styleContent is None:
-        # TODO: change folder name: scriptBlock -> assets
-        styleContent = readResource("scriptBlock/%s" % stylePath)
+        styleContent = readResource("assets/%s" % stylePath)
     if type(styleContent) is str:
         styleContent = styleContent.encode("utf-8")
     updateMediaOnProfileLoad(f"_cha_{stylePath}", styleContent)
