@@ -3,8 +3,6 @@ from aqt.utils import showInfo
 
 
 from .utils.markerReplacer import (
-    ScriptBlock,
-    ReplaceBlock,
     removeReplaceBlock,
 )
 
@@ -12,9 +10,9 @@ from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 
 from .common import (
+    removeObsoleteBlocks,
     scrollToClozeSiteScript,
-    hiddenClozeStyle,
-    hiddenClozeStyleBuggy,
+    hiddenClozeStyleBlock,
     revealConditionalBlock,
 )
 
@@ -26,8 +24,8 @@ def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
     frontSide = frontSide.replace("\r", "")
     frontSide = removeReplaceBlock(frontSide, "cloze2 {", "}")
     frontSide = removeReplaceBlock(frontSide, "cloze2_w {", "}")
-    frontSide = hiddenClozeStyleBuggy.remove(frontSide)
-    frontSide = hiddenClozeStyle.apply(frontSide, position="before")
+    frontSide = removeObsoleteBlocks(frontSide)
+    frontSide = hiddenClozeStyleBlock.apply(frontSide, position="before")
     frontSide = re.sub("<style>\s*</style>", "", frontSide)
     frontSide = frontSide.strip()
     frontSide = re.sub(r"\n{3,}", "\n\n", frontSide)

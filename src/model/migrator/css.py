@@ -12,7 +12,7 @@ from ...utils.configrw import getConfig
 from ...utils.cssHelper import minifyCSS
 from .utils.removeCSSContainingSelector import removeRuleContainingSelectorFromCSS
 
-from .common import hiddenClozeStyle
+from .common import removeObsoleteBlocks
 
 
 def migrateModelCSS(css, templateUpdated, warnUserUpdate):
@@ -20,8 +20,8 @@ def migrateModelCSS(css, templateUpdated, warnUserUpdate):
 
     css = css.replace("\r", "")  # Windows compat
 
-    # Remove obsolete hidebackStyleBlock
-    css = hiddenClozeStyle.remove(css)
+    # Remove obsolete buggy blocks
+    css = removeObsoleteBlocks(css)
 
     # cloze2 / cloze2_w tag styling is embedded directly in front/back template
     # remove such styling on css part

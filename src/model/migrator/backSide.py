@@ -1,24 +1,14 @@
 import re
 from aqt.utils import showInfo
 
-
-from .utils.markerReplacer import (
-    ScriptBlock,
-    ReplaceBlock,
-    removeScriptBlock,
-    removeReplaceBlock,
-)
-
-from ...utils.resource import readResource
 from ...utils.configrw import getConfig
 
 from ..consts import hideback_caption, hidebackBlockHeader, hidebackBlockFooter
 from .common import (
+    removeObsoleteBlocks,
     hidebackBlock,
     revealConditionalBlock,
-    hiddenClozeStyle,
     scrollToClozeSiteScript,
-    unused_revealCurrentClozeScriptBlock,
 )
 from .utils.removeCSSContainingSelector import removeCSSRuleContainingSelectorFromHtml
 
@@ -33,16 +23,12 @@ hidebackBlockHeaderAfterFieldDelete = "{{^%s}}" % hideback_caption
 def migrateBackSide(model, backSide, templateUpdated, warnUserUpdate):
     oldBackSide = backSide
 
-    # remove legacy script block
-    backSide = removeScriptBlock(
-        backSide, "/* --- DO NOT DELETE OR EDIT THIS SCRIPT --- */"
-    )
+    # remove legacy blocks
+    backSide = removeObsoleteBlocks(backSide)
 
     # Bad code killer (Issue #35)
     backSide = removeCSSRuleContainingSelectorFromHtml(backSide, "cloze2")
     backSide = removeCSSRuleContainingSelectorFromHtml(backSide, "cloze2_w")
-    backSide = hiddenClozeStyle.remove(backSide)
-    backSide = unused_revealCurrentClozeScriptBlock.remove(backSide)
     backSide = re.sub("<style>\s*</style>", "", backSide)  # Empty stylesheet remove
 
     # Code normalization

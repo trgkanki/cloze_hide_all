@@ -1,6 +1,6 @@
 from anki.consts import MODEL_CLOZE
 
-from .consts import model_name, hideback_caption, card_front, card_back, card_css
+from .consts import model_name, card_front, card_back, card_css
 from .migrator import updateClozeModel
 from ..utils.configrw import setConfig
 

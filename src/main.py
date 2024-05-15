@@ -25,8 +25,8 @@ import re
 
 from aqt.editor import Editor
 from aqt.reviewer import Reviewer
-
-from anki.hooks import addHook, wrap
+from aqt import gui_hooks
+from anki.hooks import wrap
 
 from .htmlApplier import stripClozeTags, applyClozeTags
 from .clozeHideAllModel import registerClozeModel
@@ -43,7 +43,7 @@ from .utils import uuid  # duplicate UUID checked here
 #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-addHook("profileLoaded", registerClozeModel)
+gui_hooks.profile_did_open.append(registerClozeModel)
 
 
 def updateNote(note):

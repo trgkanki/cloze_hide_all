@@ -1,4 +1,5 @@
-from ....utils.resource import readResource
+from ....utils.resource import readResource, updateMedia
+from aqt import mw, gui_hooks
 
 
 class ReplaceBlock:
@@ -27,9 +28,9 @@ class ReplaceBlock:
             )
         except ValueError:
             if position == "after":
-                targetString = targetString + "\n\n" + self.blockRaw
+                targetString = targetString + "\n" + self.blockRaw
             elif position == "before":
-                targetString = self.blockRaw + "\n\n" + targetString
+                targetString = self.blockRaw + "\n" + targetString
             else:
                 raise RuntimeError("Invalid argument %s to position" % position)
 
@@ -58,59 +59,46 @@ def removeReplaceBlock(targetString, startMarker, endMarker, *, updated=None):
 
 
 # Helper function
+_updateMediaList = []
 
 
-def ScriptBlock(blockHeader, scriptPath):
-    script = readResource("scriptBlock/%s" % scriptPath)
-    blockHeader = "/* --- DO NOT DELETE OR EDIT THIS SCRIPT (%s) --- */" % blockHeader
-    startMarker = "<script>\n%s\n" % blockHeader
-    endMarker = "\n%s\n</script>" % blockHeader
-    return ReplaceBlock(startMarker, endMarker, script)
+def updateMediaOnProfileLoad(path, content):
+    _updateMediaList.append((path, content))
+    if mw.col:
+        updateMedia(path, content)
 
 
-def removeScriptBlock(targetString, blockHeader, *, updated=None):
-    startMarker = "<script>\n%s\n" % blockHeader
-    endMarker = "\n%s\n</script>" % blockHeader
-    return removeReplaceBlock(targetString, startMarker, endMarker, updated=updated)
+def _updateProfileLoadPendingMedias():
+    for path, content in _updateMediaList:
+        updateMedia(path, content)
 
 
-if __name__ == "__main__":
-    sb = ScriptBlock("test", "1+1 = 2")
-    segment = "wow"
-    assert not sb.included(segment)
+gui_hooks.profile_did_open.append(_updateProfileLoadPendingMedias)
 
-    # Test: segment applied well
-    segment2 = sb.apply(segment)
-    print("segment2", segment2)
-    assert sb.included(segment2)
 
-    # Test: updated field when really updated
-    updated = [False]
-    segment2 = sb.apply(segment, updated=updated)
-    assert updated[0]
+def ScriptBlock(identifier, scriptPath, scriptContent=None):
+    if scriptContent is None:
+        scriptContent = readResource("scriptBlock/%s" % scriptPath)
+    if type(scriptContent) is str:
+        scriptContent = scriptContent.encode("utf-8")
+    updateMediaOnProfileLoad(f"_cha_{scriptPath}", scriptContent)
+    return ReplaceBlock(
+        f"<!-- # {identifier} -->",
+        f"<!-- / {identifier} -->",
+        f'<script src="_cha_{scriptPath}"></script>',
+    )
 
-    # Test: segment applied to already-include string won't cause issues
-    segment3 = sb.apply(segment2)
-    assert segment2 == segment3
 
-    # Test: updated field when really updated
-    updated = [False]
-    segment3 = sb.apply(segment2, updated=updated[0])
-    assert not updated[0]
+def StyleBlock(identifier, stylePath, styleContent=None):
+    if styleContent is None:
+        # TODO: change folder name: scriptBlock -> assets
+        styleContent = readResource("scriptBlock/%s" % stylePath)
+    if type(styleContent) is str:
+        styleContent = styleContent.encode("utf-8")
+    updateMediaOnProfileLoad(f"_cha_{stylePath}", styleContent)
 
-    # Test: clean up erroneously added multiple script blocks
-    segment4 = """wow
-<script>
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
-1+1 = 2
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
-</script>
-
-<script>
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
-aa
-/* --- DO NOT DELETE OR EDIT THIS SCRIPT (test) --- */
-</script>"""
-    segment4 = sb.apply(segment4)
-    print("segment4", segment4)
-    assert sb.apply(segment4) == segment2
+    return ReplaceBlock(
+        f"<!-- # {identifier} -->",
+        f"<!-- / {identifier} -->",
+        f'<link rel="stylesheet" type="text/css" href="_cha_{stylePath}">',
+    )
