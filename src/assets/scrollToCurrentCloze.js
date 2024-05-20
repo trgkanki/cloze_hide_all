@@ -1,4 +1,6 @@
-(function () {
+setTimeout(function () {
+  if (!document.querySelector('*[cha-enable]')) return
+
   function scrollToCloze () {
     const element = document.getElementsByClassName('cloze')[0]
     const elementRect = element.getBoundingClientRect()
@@ -13,4 +15,4 @@
     // for AnkiDroid
     setTimeout(scrollToCloze, 10)
   }
-})()
+}, 0)

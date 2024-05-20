@@ -6,7 +6,7 @@ from .css import migrateModelCSS
 
 def updateClozeModel(col, warnUserUpdate=True):
     models = col.models
-    clozeModel = col.models.byName(model_name)
+    clozeModel = models.byName(model_name)
     template = clozeModel["tmpls"][0]
     templateUpdated = [False]
 

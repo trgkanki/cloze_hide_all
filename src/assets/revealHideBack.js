@@ -1,4 +1,7 @@
-(function () {
+setTimeout(function() {
+  if (!document.querySelector('*[cha-enable]')) return
+  if (document.getElementById('cloze2-toggle')) return
+
   const cssContent = `
   cloze2.reveal-cloze2 {
     display: inline;
@@ -23,11 +26,17 @@
     document.head.appendChild(styleEl)
   }
 
-  const toggleButton = document.getElementById('cloze2-toggle')
-  toggleButton.addEventListener('click', function () {
+  const toggleButton = document.createElement('button')
+  toggleButton.id = 'cloze2-toggle'
+  toggleButton.innerHTML = 'Toggle mask'
+  toggleButton.addEventListener('click', function() {
     const elements = document.querySelectorAll('cloze2, cloze2_w')
     for (let i = 0; i < elements.length; i++) {
       elements[i].classList.toggle('reveal-cloze2')
     }
   })
-})()
+
+  const scriptElements = document.getElementsByClassName('cha-hideback-js')
+  const lastScriptElement = scriptElements[scriptElements.length - 1]
+  lastScriptElement.parentNode.insertBefore(toggleButton, lastScriptElement)
+}, 0)

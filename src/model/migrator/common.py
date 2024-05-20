@@ -10,7 +10,7 @@ from .utils.markerReplacer import (
 
 from ...utils.resource import readResource
 from ...utils.configrw import getConfig
-from ..consts import hideback_html, hidebackBlockHeader, hidebackBlockFooter
+from ..consts import hidebackCommentedHeader, hidebackCommentedFooter
 
 ###############################################################################
 # Script blocks
@@ -76,11 +76,33 @@ revealConditionalBlock = ScriptBlock("ba699a36f501800d", "revealConditional.js")
 
 
 hidebackBlock = ReplaceBlock(
-    hidebackBlockHeader,
-    hidebackBlockFooter,
-    '\n<link rel="stylesheet" type="text/css" href="_cha_hiddenClozeStyle.css">\n<script src="_cha_revealHideback.js"></script>\n%s\n'
-    % (hideback_html),
+    hidebackCommentedHeader,
+    hidebackCommentedFooter,
+    '<script class="cha-hideback-js" src="_cha_revealHideback.js"></script>',
 )
 updateMediaOnProfileLoad(
     "_cha_revealHideback.js", readResource("assets/revealHideBack.js", binary=True)
+)
+
+chaEnableBlock = ReplaceBlock(
+    "<!-- # 19bc9b73c2329320 -->",
+    "<!-- / 19bc9b73c2329320 -->",
+    '<div cha-enable style="display: none;"></div>',
+)
+
+# ----------
+
+
+def applyChaScriptToHTML(html):
+    html = hiddenClozeStyleBlock.apply(html, position="before")
+    html = revealConditionalBlock.apply(html)
+    html = scrollToClozeSiteScript.apply(html)
+    html = chaEnableBlock.apply(html, position="before")
+    return html
+
+
+# ----------
+
+updateMediaOnProfileLoad(
+    "_cha_cha-enable.png", readResource("assets/cha-enable.png", binary=True)
 )

@@ -25,12 +25,16 @@ import re
 
 from aqt.editor import Editor
 from aqt.reviewer import Reviewer
-from aqt import gui_hooks
+from aqt import gui_hooks, mw
 from anki.hooks import wrap
+from aqt.utils import tooltip
+
+from typing import List
 
 from .htmlApplier import stripClozeTags, applyClozeTags
 from .clozeHideAllModel import registerClozeModel
 from .model.consts import model_name
+from .model.migrator.common import applyChaScriptToHTML, hidebackBlock
 from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .utils import openChangelog
@@ -44,14 +48,6 @@ from .utils import uuid  # duplicate UUID checked here
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 gui_hooks.profile_did_open.append(registerClozeModel)
-
-
-def updateNote(note):
-    for key in note.keys():
-        html = note[key]
-        html = stripClozeTags(html)
-        html = applyClozeTags(html)
-        note[key] = html
 
 
 ## Hooks
@@ -84,14 +80,59 @@ else:
 # Apply CHA code before save
 
 
+def findFieldsInTemplate(template: str) -> List[str]:
+    fields: List[str] = []
+    for m in re.findall(r"\{\{(?:.+?::?)?(.+?)\}\}", template):
+        # skip conditional rendering
+        if m[0] == "#" or m[0] == "/":
+            continue
+        fields.append(m)
+    return fields
+
+
 def beforeSaveNow(self, callback, keepFocus=False, *, _old):
     def newCallback():
         # self.note may be None when editor isn't yet initialized.
         # ex: entering browser
-        if self.note and isNoteClozeHideAllType(self.note):
-            updateNote(self.note)
+        note = self.note
+        if note:
+            useCHA = False
+            if isNoteClozeHideAllType(note):
+                useCHA = "note_type"
+            else:
+                for key in note.keys():
+                    if "cha-enable" in note[key]:
+                        useCHA = "card"
+                        break
+
+            tooltip(f"useCHA: {useCHA}")
+            if useCHA:
+                qFields: List[str] = []
+                aFields: List[str] = []
+                if useCHA == "card":
+                    model = mw.col.models.get(note.mid)
+                    template = model["tmpls"][0]
+                    qFields = findFieldsInTemplate(template["qfmt"])
+                    aFields = findFieldsInTemplate(template["afmt"])
+
+                for key in note.keys():
+                    html = note[key]
+                    html = stripClozeTags(html)
+                    html = applyClozeTags(html)
+
+                    if useCHA == "card":
+                        html = applyChaScriptToHTML(html)
+                        if key in aFields and key not in qFields:
+                            html = hidebackBlock.apply(html)
+
+                    note[key] = html
+            else:
+                for key in note.keys():
+                    html = note[key]
+                    html = stripClozeTags(html)
+
             if not self.addMode:
-                self.note.flush()
+                note.flush()
                 self.mw.requireReset()
         callback()
 
@@ -134,3 +175,26 @@ def newShortuts(self, *, _old):
 
 
 Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, newShortuts, "around")
+
+## "Cloze hide all" button
+
+
+def add_buttons(buttons: List[str], editor: Editor) -> None:
+    shortcut = "Ctrl+Alt+Shift+H"
+
+    def _(editor: Editor) -> None:
+        editor.web.eval("setFormat('inserthtml', '<img src=_cha_cha-enable.png>');")
+
+    buttons.append(
+        editor.addButton(
+            icon=None,
+            cmd=f"add_cloze_hide_all_marker",
+            func=_,
+            tip="Make this note like 'Cloze (Hide All)'",
+            label="█ CHA",
+            keys=shortcut,
+        )
+    )
+
+
+gui_hooks.editor_did_init_buttons.append(add_buttons)

@@ -1,4 +1,6 @@
-(function () {
+setTimeout(function() {
+  if (!document.querySelector('*[cha-enable]')) return
+
   const hideBackCaption = 'Hide others on the back side'
 
   const fieldNames = document.querySelectorAll('#fields .fname')
@@ -36,4 +38,4 @@
   display: none;
 }
   `
-})()
+}, 0)

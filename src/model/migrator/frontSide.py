@@ -11,28 +11,24 @@ from ...utils.configrw import getConfig
 
 from .common import (
     removeObsoleteBlocks,
-    scrollToClozeSiteScript,
-    hiddenClozeStyleBlock,
-    revealConditionalBlock,
+    applyChaScriptToHTML,
 )
 
 
 def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
     oldFrontSide = frontSide
 
-    # update cloze box related stylings
+    # remove obsolete blocks
     frontSide = frontSide.replace("\r", "")
+    frontSide = removeObsoleteBlocks(frontSide)
     frontSide = removeReplaceBlock(frontSide, "cloze2 {", "}")
     frontSide = removeReplaceBlock(frontSide, "cloze2_w {", "}")
-    frontSide = removeObsoleteBlocks(frontSide)
-    frontSide = hiddenClozeStyleBlock.apply(frontSide, position="before")
     frontSide = re.sub("<style>\s*</style>", "", frontSide)
-    frontSide = frontSide.strip()
     frontSide = re.sub(r"\n{3,}", "\n\n", frontSide)
+    frontSide = frontSide.strip()
 
     # functions
-    frontSide = revealConditionalBlock.apply(frontSide)
-    frontSide = scrollToClozeSiteScript.apply(frontSide)
+    frontSide = applyChaScriptToHTML(frontSide)
 
     if oldFrontSide != frontSide:
         templateUpdated[0] = True

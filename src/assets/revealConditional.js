@@ -1,6 +1,8 @@
 // Reveal only current clozes here
 
 setTimeout(function () {
+  if (!document.querySelector('*[cha-enable]')) return
+
   // Try getting current cloze number
   let currentClozeNumber = null
 
