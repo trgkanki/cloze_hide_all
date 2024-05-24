@@ -97,7 +97,13 @@ def applyChaScriptToHTML(html):
     html = hiddenClozeStyleBlock.apply(html, position="before")
     html = revealConditionalBlock.apply(html)
     html = scrollToClozeSiteScript.apply(html)
-    html = chaEnableBlock.apply(html, position="before")
+    return html
+
+
+def stripChaScriptToHTML(html):
+    html = hiddenClozeStyleBlock.remove(html)
+    html = revealConditionalBlock.remove(html)
+    html = scrollToClozeSiteScript.remove(html)
     return html
 
 

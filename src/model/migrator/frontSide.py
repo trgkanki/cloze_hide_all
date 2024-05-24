@@ -12,6 +12,7 @@ from ...utils.configrw import getConfig
 from .common import (
     removeObsoleteBlocks,
     applyChaScriptToHTML,
+    chaEnableBlock,
 )
 
 
@@ -29,6 +30,7 @@ def migrateFrontSide(frontSide, templateUpdated, warnUserUpdate):
 
     # functions
     frontSide = applyChaScriptToHTML(frontSide)
+    frontSide = chaEnableBlock.apply(frontSide, position="before")
 
     if oldFrontSide != frontSide:
         templateUpdated[0] = True

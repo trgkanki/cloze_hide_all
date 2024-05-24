@@ -13,6 +13,7 @@ from ..consts import (
 from .common import (
     removeObsoleteBlocks,
     hidebackBlock,
+    chaEnableBlock,
     applyChaScriptToHTML,
 )
 from .utils.removeCSSContainingSelector import removeCSSRuleContainingSelectorFromHtml
@@ -54,6 +55,7 @@ def migrateBackSide(model, backSide, templateUpdated, warnUserUpdate):
     # This is where the main substitution happens.
     if True:
         backSide = applyChaScriptToHTML(backSide)
+        backSide = chaEnableBlock.apply(backSide, position="before")
         backSide = hidebackBlock.apply(backSide)
 
     # support for 'alwaysHideback'

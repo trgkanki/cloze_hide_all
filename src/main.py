@@ -34,7 +34,11 @@ from typing import List
 from .htmlApplier import stripClozeTags, applyClozeTags
 from .clozeHideAllModel import registerClozeModel
 from .model.consts import model_name
-from .model.migrator.common import applyChaScriptToHTML, hidebackBlock
+from .model.migrator.common import (
+    stripChaScriptToHTML,
+    applyChaScriptToHTML,
+    hidebackBlock,
+)
 from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .utils import openChangelog
@@ -105,7 +109,6 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
                         useCHA = "card"
                         break
 
-            tooltip(f"useCHA: {useCHA}")
             if useCHA:
                 qFields: List[str] = []
                 aFields: List[str] = []
@@ -130,6 +133,9 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
                 for key in note.keys():
                     html = note[key]
                     html = stripClozeTags(html)
+                    html = stripChaScriptToHTML(html)
+                    html = hidebackBlock.remove(html)
+                    note[key] = html
 
             if not self.addMode:
                 note.flush()
