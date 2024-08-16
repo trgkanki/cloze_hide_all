@@ -99,7 +99,7 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
         # self.note may be None when editor isn't yet initialized.
         # ex: entering browser
         note = self.note
-        if note:
+        if note and not keepFocus:
             useCHA = False
             if isNoteClozeHideAllType(note):
                 useCHA = "note_type"
@@ -140,6 +140,7 @@ def beforeSaveNow(self, callback, keepFocus=False, *, _old):
             if not self.addMode:
                 note.flush()
                 self.mw.requireReset()
+
         callback()
 
     return _old(self, newCallback, keepFocus)
