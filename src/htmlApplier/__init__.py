@@ -27,10 +27,11 @@ def applyClozeTags(html):
                 # People may don't want any model migration,
                 # (`noModelMigration` set to true)
                 # Emit old-style always-shown cloze code for backward compatibility.
-                return "{{c%d::<cz_hide>%s</cz_hide>%s}}" % (
+                return "{{c%d::<cz_hide>%s</cz_hide>%s%s}}" % (
                     clozeNumber,
                     clozeRevealCondition,
                     clozeContent,
+                    clozeCaption,
                 )
 
             # Cloze number conditional cloze
