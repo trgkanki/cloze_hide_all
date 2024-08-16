@@ -13,3 +13,7 @@ cloze2_w.revealed {
 cloze2.revealed {
   display: inline;
 }
+
+cz_hide {
+  display: none;
+}
