@@ -7,6 +7,11 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 24.9.11i29 (2024-09-11)
+
+- Card-level cloze. Now you can use "Cloze (hide all)" on all cloze types.
+- Fixed per-condition reveal not working correctly.
+
 ## 24.4.15i51 (2024-04-15)
 
 - hotfix: minibrowser bug
