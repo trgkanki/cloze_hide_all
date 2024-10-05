@@ -29,6 +29,7 @@ from aqt.editor import Editor
 from aqt.reviewer import Reviewer
 from aqt import gui_hooks, mw
 from anki.hooks import wrap
+from anki.hooks import note_will_flush
 from aqt.utils import tooltip
 
 from typing import List
@@ -118,66 +119,46 @@ def findFieldsInTemplate(template: str) -> List[str]:
     return fields
 
 
-def beforeSaveNow(self, callback, keepFocus=False, *, _old):
-    def newCallback():
-        # self.note may be None when editor isn't yet initialized.
-        # ex: entering browser
-        note = self.note
-        if note and not keepFocus:
-            useCHA = False
-            if isNoteClozeHideAllType(note):
-                useCHA = "note_type"
-            else:
-                for key in note.keys():
-                    if "cha-enable" in note[key]:
-                        useCHA = "card"
-                        break
+def beforeNoteFlush(note):
+    useCHA = False
+    if isNoteClozeHideAllType(note):
+        useCHA = "note_type"
+    else:
+        for key in note.keys():
+            if "cha-enable" in note[key]:
+                useCHA = "card"
+                break
 
-            if useCHA:
-                qFields: List[str] = []
-                aFields: List[str] = []
-                if useCHA == "card":
-                    model = mw.col.models.get(note.mid)
-                    template = model["tmpls"][0]
-                    qFields = findFieldsInTemplate(template["qfmt"])
-                    aFields = findFieldsInTemplate(template["afmt"])
+    if useCHA:
+        qFields: List[str] = []
+        aFields: List[str] = []
+        if useCHA == "card":
+            model = mw.col.models.get(note.mid)
+            template = model["tmpls"][0]
+            qFields = findFieldsInTemplate(template["qfmt"])
+            aFields = findFieldsInTemplate(template["afmt"])
 
-                for key in note.keys():
-                    html = note[key]
-                    html = stripClozeTags(html)
-                    html = applyClozeTags(html)
+        for key in note.keys():
+            html = note[key]
+            html = stripClozeTags(html)
+            html = applyClozeTags(html)
 
-                    if useCHA == "card":
-                        html = applyChaScriptToHTML(html)
-                        if key in aFields and key not in qFields:
-                            html = hidebackBlock.apply(html)
+            if useCHA == "card":
+                html = applyChaScriptToHTML(html)
+                if key in aFields and key not in qFields:
+                    html = hidebackBlock.apply(html)
 
-                    note[key] = html
-            else:
-                for key in note.keys():
-                    html = note[key]
-                    html = stripClozeTags(html)
-                    html = stripChaScriptToHTML(html)
-                    html = hidebackBlock.remove(html)
-                    note[key] = html
-
-            if not self.addMode:
-                note.flush()
-                self.mw.requireReset()
-
-        callback()
-
-    return _old(self, newCallback, keepFocus)
+            note[key] = html
+    else:
+        for key in note.keys():
+            html = note[key]
+            html = stripClozeTags(html)
+            html = stripChaScriptToHTML(html)
+            html = hidebackBlock.remove(html)
+            note[key] = html
 
 
-if hasattr(Editor, "call_after_note_saved"):  # 2.1.46+ fix
-    Editor.call_after_note_saved = wrap(
-        Editor.call_after_note_saved, beforeSaveNow, "around"
-    )
-    Editor.saveNow = Editor.call_after_note_saved
-
-else:
-    Editor.saveNow = wrap(Editor.saveNow, beforeSaveNow, "around")
+note_will_flush.append(beforeNoteFlush)
 
 
 #### Hook for HTML edit
