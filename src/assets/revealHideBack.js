@@ -1,5 +1,8 @@
 setTimeout(function() {
-  if (!document.querySelector('*[cha-enable]')) return
+  if (
+    !document.querySelector('*[cha-enable]') &&
+    !document.querySelector('img[src="_cha_cha-enable.png"]')
+  ) return
   if (document.getElementById('cloze2-toggle')) return
 
   const cssContent = `

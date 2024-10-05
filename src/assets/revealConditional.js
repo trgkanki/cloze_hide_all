@@ -1,7 +1,10 @@
 // Reveal only current clozes here
 
 setTimeout(function () {
-  if (!document.querySelector('*[cha-enable]')) return
+  if (
+    !document.querySelector('*[cha-enable]') &&
+    !document.querySelector('img[src="_cha_cha-enable.png"]')
+  ) return
 
   // Try getting current cloze number
   let currentClozeNumber = null
