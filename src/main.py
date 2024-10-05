@@ -22,6 +22,8 @@
 # See http://www.gnu.org/licenses/agpl.html
 
 import re
+import os
+import time
 
 from aqt.editor import Editor
 from aqt.reviewer import Reviewer
@@ -43,6 +45,28 @@ from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .utils import openChangelog
 from .utils import uuid  # duplicate UUID checked here
+
+
+# Debugging tool
+def debugLog(s: str, *, locals=[]):
+    try:
+        if not os.environ["ANKIDEV"]:
+            return
+    except KeyError:
+        return
+
+    now = time.time()
+
+    if not locals:
+        wf = open(
+            os.path.join(os.path.dirname(__file__), "debug.log"), "wb", buffering=0
+        )
+        locals[:] = [wf, now]
+
+    wf, lastTime = locals
+    s = "[%8.3f] (+%.3f) %s\r\n" % (time.time(), now - lastTime, s)
+    wf.write(s.encode("utf-8"))
+    locals[1] = now
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
