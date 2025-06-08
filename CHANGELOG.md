@@ -7,6 +7,11 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 25.6.8i156 (2025-06-08)
+
+- modern anki version compatibility
+- performance optimization
+
 ## 24.9.11i29 (2024-09-11)
 
 - Card-level cloze. Now you can use "Cloze (hide all)" on all cloze types.
