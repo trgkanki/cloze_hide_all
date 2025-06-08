@@ -7,6 +7,10 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 25.6.8i171 (2025-06-09)
+
+- fix initial splash screen
+
 ## 25.6.8i156 (2025-06-08)
 
 - modern anki version compatibility

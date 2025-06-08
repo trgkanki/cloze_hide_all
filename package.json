@@ -1,6 +1,6 @@
 {
   "name": "cloze_hide_all",
-  "version": "25.6.8i156",
+  "version": "25.6.8i171",
   "description": "Cloze (hide all) addon page",
   "scripts": {
     "postinstall": "python3 -m pip install -r requirements.txt",
