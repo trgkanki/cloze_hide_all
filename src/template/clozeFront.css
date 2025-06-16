@@ -17,3 +17,7 @@ cloze2.revealed {
 cz_hide {
   display: none;
 }
+
+img[src="_cha_cha-enable.png"] {
+  display: none;
+}
