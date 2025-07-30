@@ -40,6 +40,6 @@ setTimeout(function() {
   })
 
   const scriptElements = document.getElementsByClassName('cha-hideback-js')
-  const lastScriptElement = scriptElements[scriptElements.length - 1]
+  const lastScriptElement = scriptElements[0]
   lastScriptElement.parentNode.insertBefore(toggleButton, lastScriptElement)
 }, 0)
