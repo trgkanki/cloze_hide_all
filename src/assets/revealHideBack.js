@@ -39,7 +39,11 @@ setTimeout(function() {
     }
   })
 
-  const scriptElements = document.getElementsByClassName('cha-hideback-js')
-  const lastScriptElement = scriptElements[0]
-  lastScriptElement.parentNode.insertBefore(toggleButton, lastScriptElement)
+  const hideAllMarker = document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0]
+  if (hideAllMarker) {
+    hideAllMarker.parentNode.insertBefore(toggleButton, hideAllMarker)
+  } else {
+    const firsrtScriptElement = document.getElementsByClassName('cha-hideback-js')
+    firsrtScriptElement.parentNode.insertBefore(toggleButton, firsrtScriptElement)
+  }
 }, 0)
