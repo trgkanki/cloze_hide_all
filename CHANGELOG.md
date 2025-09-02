@@ -7,6 +7,10 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 25.9.2i166 (2025-09-03)
+
+- Fixed "reveal all" button images with CHA marker-based cloze cards.
+
 ## 25.6.8i171 (2025-06-09)
 
 - fix initial splash screen
