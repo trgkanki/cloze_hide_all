@@ -1,9 +1,8 @@
 setTimeout(function() {
-  if (
-    !document.querySelector('*[cha-enable]') &&
-    !document.querySelector('img[src="_cha_cha-enable.png"]')
-  ) return
-  if (document.getElementById('cloze2-toggle')) return
+  if (!document.querySelector('*[cha-enable]') &&
+      !document.querySelector('img[src="_cha_cha-enable.png"]'))
+    return;
+  if (document.getElementById('cloze2-toggle')) return;
 
   const cssContent = `
   cloze2.reveal-cloze2 {
@@ -39,11 +38,13 @@ setTimeout(function() {
     }
   })
 
-  const hideAllMarker = document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0]
+  const hideAllMarker =
+      document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0];
   if (hideAllMarker) {
     hideAllMarker.parentNode.insertBefore(toggleButton, hideAllMarker)
   } else {
-    const firsrtScriptElement = document.getElementsByClassName('cha-hideback-js')
-    firsrtScriptElement.parentNode.insertBefore(toggleButton, firsrtScriptElement)
+    const firstScriptElement =
+        document.getElementsByClassName('cha-hideback-js')[0];
+    firstScriptElement.parentNode.insertBefore(toggleButton, firstScriptElement)
   }
 }, 0)
