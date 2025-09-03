@@ -15,7 +15,7 @@
 
 # -*- coding: utf-8 -*-
 #
-# cloze_hide_all v25.9.2i166
+# cloze_hide_all v25.9.3i145
 #
 # Copyright: trgk (phu54321@naver.com)
 # License: GNU AGPL, version 3 or later;
