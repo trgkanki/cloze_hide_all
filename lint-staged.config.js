@@ -14,8 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module.exports = {
-  '*.py': [
-    'pipx run black'
-  ],
+  '*.py': ['pipx run black'],
+  '*.js': ['npx standard --fix'],
   '*': () => 'npm run test'
 }

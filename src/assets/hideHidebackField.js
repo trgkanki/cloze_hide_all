@@ -1,4 +1,4 @@
-setTimeout(function() {
+setTimeout(function () {
   if (
     !document.querySelector('*[cha-enable]') &&
     !document.querySelector('img[src="_cha_cha-enable.png"]')

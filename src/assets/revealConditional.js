@@ -39,7 +39,6 @@ setTimeout(function () {
     element.classList.add('cha-handled')
   }
 
-
   // Show clozes with proper condition
   const clozeBoxWithConditionList = document.querySelectorAll('cloze2_w[data-reveal-condition]:not(.cha-handled)')
   for (const box of clozeBoxWithConditionList) {

@@ -10,6 +10,7 @@
     "dist": "npx trgkanki-template-cli release",
     "test": "npm-run-all test:py",
     "test:py": "pipx run pytest tests",
+    "lint:js": "npx standard --fix",
     "prepare": "husky install"
   },
   "keywords": [

@@ -1,8 +1,7 @@
-setTimeout(function() {
+setTimeout(function () {
   if (!document.querySelector('*[cha-enable]') &&
-      !document.querySelector('img[src="_cha_cha-enable.png"]'))
-    return;
-  if (document.getElementById('cloze2-toggle')) return;
+      !document.querySelector('img[src="_cha_cha-enable.png"]')) { return }
+  if (document.getElementById('cloze2-toggle')) return
 
   const cssContent = `
   cloze2.reveal-cloze2 {
@@ -31,7 +30,7 @@ setTimeout(function() {
   const toggleButton = document.createElement('button')
   toggleButton.id = 'cloze2-toggle'
   toggleButton.innerHTML = 'Toggle mask'
-  toggleButton.addEventListener('click', function() {
+  toggleButton.addEventListener('click', function () {
     const elements = document.querySelectorAll('cloze2, cloze2_w')
     for (let i = 0; i < elements.length; i++) {
       elements[i].classList.toggle('reveal-cloze2')
@@ -39,12 +38,12 @@ setTimeout(function() {
   })
 
   const hideAllMarker =
-      document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0];
+      document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0]
   if (hideAllMarker) {
     hideAllMarker.parentNode.insertBefore(toggleButton, hideAllMarker)
   } else {
     const firstScriptElement =
-        document.getElementsByClassName('cha-hideback-js')[0];
+        document.getElementsByClassName('cha-hideback-js')[0]
     firstScriptElement.parentNode.insertBefore(toggleButton, firstScriptElement)
   }
 }, 0)
