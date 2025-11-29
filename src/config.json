@@ -3,5 +3,6 @@
   "clozeHideAllModelNames": [],
   "noModelMigration": false,
   "alwaysHideback": false,
-  "shortcutToggleMask": "ctrl+r"
+  "shortcutToggleMask": "ctrl+r",
+  "debug": false
 }
