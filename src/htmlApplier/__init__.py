@@ -5,6 +5,7 @@ import re
 
 from .wrapClozeTags import wrapClozeTag
 from .stripClozeTags import stripClozeTags
+from ..utils import debugLog
 
 
 def applyClozeTags(html):
@@ -35,15 +36,29 @@ def applyClozeTags(html):
                 )
 
             # Cloze number conditional cloze
-            # {{c1::<1!content}}  ← show when current cloze number < 1
+            # {{c1::<1!content};}  ← show when current cloze number < 1\
             match = re.match(
-                r"^(" + r"(?:(?:<|>|&lt;|&gt;)=?|=|==)" + r"\d*[!?]" + r")(.+)$",
+                r"^(.+?[!?])(.+)$",
                 clozeContent,
             )
             if match:
-                clozeRevealCondition = match.group(1)
-                clozeContent = match.group(2)
-                break
+                conds = match.group(1)
+                conds = conds.replace("&lt;", "<")
+                conds = conds.replace("&gt;", ">")
+                conds = conds[:-1]
+                isValidClozeConditions = True
+                for c in conds.split(","):
+                    if not (
+                        re.match(r"^[<=>]=?\d+$", c)
+                        or re.match(r"^<>\d+$", c)
+                        or re.match(r"^\d+$", c)
+                    ):
+                        isValidClozeConditions = False
+                        break
+                if isValidClozeConditions:
+                    clozeRevealCondition = match.group(1)
+                    clozeContent = match.group(2)
+                    break
 
             # other case
             clozeRevealCondition = None

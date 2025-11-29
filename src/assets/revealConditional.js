@@ -49,29 +49,38 @@ setTimeout(function () {
     let shouldReveal = false
 
     if (revealCondition === '') shouldReveal = true
-    const m = revealCondition.match(/^(<|<=|>|>=|=|==)(\d*)$/)
-    if (m) {
-      const comparator = m[1]
-      let rhs = NaN
-      if (m[2]) rhs = Number(m[2])
-      else {
-        for (const cls of box.classList) {
-          const m = cls.match(/^cz-(\d+)$/)
-          if (m) {
-            rhs = Number(m[1])
-            break
+    const conditions = revealCondition.split(',')
+    for (const cond of conditions) {
+      if (shouldReveal) break
+      const m = cond.match(/^(<|<=|>|>=|=|==|<>)?(\d*)$/)
+      if (m) {
+        const comparator = m[1]
+        let rhs = NaN
+        if (m[2]) rhs = Number(m[2])
+        else {
+          for (const cls of box.classList) {
+            const m = cls.match(/^cz-(\d+)$/)
+            if (m) {
+              rhs = Number(m[1])
+              break
+            }
           }
         }
-      }
 
-      shouldReveal = (
-        (comparator === '>=' && currentClozeNumber >= rhs) ||
-        (comparator === '>' && currentClozeNumber > rhs) ||
-        (comparator === '<=' && currentClozeNumber <= rhs) ||
-        (comparator === '<' && currentClozeNumber < rhs) ||
-        (comparator === '==' && currentClozeNumber === rhs)
-      )
-    } if (shouldReveal) {
+        if (
+          (comparator === '>=' && currentClozeNumber >= rhs) ||
+          (comparator === '>' && currentClozeNumber > rhs) ||
+          (comparator === '<=' && currentClozeNumber <= rhs) ||
+          (comparator === '<' && currentClozeNumber < rhs) ||
+          (comparator === '<>' && currentClozeNumber !== rhs) ||
+          (comparator === '==' && currentClozeNumber === rhs) ||
+          (comparator === '' && currentClozeNumber === rhs)
+        ) {
+          shouldReveal = true
+        }
+      }
+    }
+    if (shouldReveal) {
       for (const element of document.querySelectorAll('cloze2.czi-' + clozeId)) {
         element.classList.add('revealed')
       }
