@@ -73,7 +73,7 @@ setTimeout(function () {
           (comparator === '<' && currentClozeNumber < rhs) ||
           (comparator === '<>' && currentClozeNumber !== rhs) ||
           (comparator === '==' && currentClozeNumber === rhs) ||
-          (comparator === '' && currentClozeNumber === rhs)
+          (!comparator && currentClozeNumber === rhs)
         ) {
           shouldReveal = true
         }
