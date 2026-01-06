@@ -93,17 +93,20 @@ chaEnableBlock = ReplaceBlock(
 # ----------
 
 
-def applyChaScriptToHTML(html):
-    html = hiddenClozeStyleBlock.apply(html, position="before")
-    html = revealConditionalBlock.apply(html)
-    html = scrollToClozeSiteScript.apply(html)
+def applyChaScriptToHTML(html: str):
+    html = html.strip()
+    if html:
+        html = hiddenClozeStyleBlock.apply(html, position="before")
+        html = revealConditionalBlock.apply(html)
+        html = scrollToClozeSiteScript.apply(html)
     return html
 
 
-def stripChaScriptToHTML(html):
+def stripChaScriptToHTML(html: str):
     html = hiddenClozeStyleBlock.remove(html)
     html = revealConditionalBlock.remove(html)
     html = scrollToClozeSiteScript.remove(html)
+    html = html.strip()
     return html
 
 

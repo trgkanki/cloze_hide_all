@@ -144,8 +144,10 @@ def beforeNoteFlush(note):
             html = applyClozeTags(html)
 
             if useCHA == "card":
+                html = hidebackBlock.remove(html)
+                html = stripChaScriptToHTML(html)
                 html = applyChaScriptToHTML(html)
-                if key in aFields and key not in qFields:
+                if html and key in aFields and key not in qFields:
                     html = hidebackBlock.apply(html)
 
             note[key] = html
