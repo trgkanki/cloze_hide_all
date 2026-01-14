@@ -21,3 +21,7 @@ cz_hide {
 img[src="_cha_cha-enable.png"] {
   display: none;
 }
+
+.cz_on_active:not(:has(.cloze)) {
+  display: none;
+}

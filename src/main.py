@@ -194,21 +194,45 @@ Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, newShortuts, "around")
 
 
 def add_buttons(buttons: List[str], editor: Editor) -> None:
-    shortcut = "Ctrl+Alt+Shift+H"
+    cha_marker_shortcut = "Ctrl+Alt+Shift+H"
 
-    def _(editor: Editor) -> None:
+    def add_cloze_hide_all_marker(editor: Editor) -> None:
         editor.web.eval("setFormat('inserthtml', '<img src=_cha_cha-enable.png>');")
 
     buttons.append(
         editor.addButton(
             icon=None,
             cmd=f"add_cloze_hide_all_marker",
-            func=_,
-            tip="Make this note like 'Cloze (Hide All)'",
+            func=add_cloze_hide_all_marker,
+            tip="Add CHA reveal button here",
             label="█ CHA",
-            keys=shortcut,
+            keys=cha_marker_shortcut,
+        )
+    )
+
+    def add_conditional_visible_cloze_area(editor: Editor) -> None:
+        editor.web.eval(
+            "setFormat('inserthtml', '<span class=\"cz_on_active\">&nbsp;</span>');"
+        )
+
+    buttons.append(
+        editor.addButton(
+            icon=None,
+            cmd=f"add_conditional_visible_cloze_area",
+            func=add_conditional_visible_cloze_area,
+            tip="Make this note like 'Cloze (Hide All)'",
+            label="『cond』",
+            keys=None,
         )
     )
 
 
 gui_hooks.editor_did_init_buttons.append(add_buttons)
+
+
+# code from https://github.com/ijgnd/anki__editor__apply__font_color__background_color__custom_class__custom_style/blob/master/src/editor/webview.py#L6
+def append_css_to_editor(js, note, editor) -> str:
+    return js + readResource("assets/editorAddActiveOnlyCSS.js")
+
+
+gui_hooks.editor_will_load_note.append(append_css_to_editor)
