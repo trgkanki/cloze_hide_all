@@ -212,7 +212,7 @@ def add_buttons(buttons: List[str], editor: Editor) -> None:
 
     def add_conditional_visible_cloze_area(editor: Editor) -> None:
         editor.web.eval(
-            "setFormat('inserthtml', '<span class=\"cz_on_active\">&nbsp;</span>');"
+            "wrap('<table class=\"cz_on_active\"><tr><td>', '</td></tr></table>');"
         )
 
     buttons.append(
