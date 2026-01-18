@@ -211,7 +211,7 @@ def add_buttons(buttons: List[str], editor: Editor) -> None:
     )
 
     def add_conditional_visible_cloze_area(editor: Editor) -> None:
-        editor.web.eval("wrap('<span class=\"cz_on_active\">', '</span>');")
+        editor.web.eval("wrap('<div class=\"cz_on_active\">', '</div>');")
 
     buttons.append(
         editor.addButton(
