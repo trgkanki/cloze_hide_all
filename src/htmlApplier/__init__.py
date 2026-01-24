@@ -79,11 +79,12 @@ def applyClozeTags(html):
     html = re.sub(
         r"\{\{"  # starting {{
         r"c(\d+)::"  # c1::
-        r"((?:[^:}]|:[^:}])*?)"  # cloze content
-        r"(::(?:(?:[^:}]|:[^:}])*?))?"  # cloze caption
+        r"(.*?)"  # cloze content
+        r"(::.*?)?"  # cloze caption
         r"\}\}",  # ending "}}"
         _,
         html,
+        flags=re.DOTALL,
     )
 
     return html
