@@ -4,11 +4,10 @@ require('anki/RichTextInput').lifecycle.onMount(async ({ customStyles }) => {
   styleTag.textContent = `
       .cz_on_active {
         border: 2px dashed #38f;
-        border-collapse: collapse;
-        min-height: 1em;
         padding: .1em;
+        min-height: 1em;
       }
-      table..cz_on_active, div.cz_on_active {
+      table.cz_on_active, span.cz_on_active {
         border: 2px dashed #f43;
       }
     `
