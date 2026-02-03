@@ -4,7 +4,7 @@
   "description": "Cloze (hide all) addon page",
   "scripts": {
     "postinstall": "echo \"Make sure to install pipx on your environment! (npx analogue for python)\"",
-    "build": "npm run compile && npx trgkanki-template-cli package",
+    "build": "npx trgkanki-template-cli package",
     "update:template": "npx trgkanki-template-cli update",
     "link": "npx trgkanki-template-cli link",
     "dist": "npx trgkanki-template-cli release",
