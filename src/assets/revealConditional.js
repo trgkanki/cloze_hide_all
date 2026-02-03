@@ -1,10 +1,14 @@
 // Reveal only current clozes here
 
 setTimeout(function () {
+  // Don't enable when CHA marker isn't visible.
   if (
     !document.querySelector('*[cha-enable]') &&
     !document.querySelector('img[src="_cha_cha-enable.png"]')
   ) return
+
+  // Don't enable on front side
+  if (document.querySelector('.cloze[data-cloze]')) return
 
   // Try getting current cloze number
   let currentClozeNumber = null
