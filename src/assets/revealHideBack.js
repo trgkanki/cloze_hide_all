@@ -1,6 +1,10 @@
 setTimeout(function () {
   if (!document.querySelector('*[cha-enable]') &&
       !document.querySelector('img[src="_cha_cha-enable.png"]')) { return }
+
+  // Don't enable on front side
+  if (document.querySelector('.cloze[data-cloze]')) return
+
   if (document.getElementById('cloze2-toggle')) return
 
   const cssContent = `
