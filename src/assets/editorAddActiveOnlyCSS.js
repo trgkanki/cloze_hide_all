@@ -3,7 +3,8 @@ require('anki/RichTextInput').lifecycle.onMount(async ({ customStyles }) => {
   const { element: styleTag } = await addStyleTag('customStyles')
   styleTag.textContent = `
       .cz_on_active {
-        border: 2px dashed #38f;
+        outline: 2px dashed #38f;
+        outline-offset: -1px;
         padding: .1em;
         min-height: 1em;
       }

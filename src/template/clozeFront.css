@@ -27,6 +27,7 @@ img[src="_cha_cha-enable.png"] {
 }
 
 .cz_on_active:not(:has(.cloze)):has(.reveal-cloze2) {
-  border: 2px dashed #38f;
+  outline: 2px dashed #38f;
+  outline-offset: -1px;
   padding: .1em;
 }
