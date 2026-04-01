@@ -193,39 +193,52 @@ Reviewer._shortcutKeys = wrap(Reviewer._shortcutKeys, newShortuts, "around")
 ## "Cloze hide all" button
 
 
-def add_buttons(buttons: List[str], editor: Editor) -> None:
-    cha_marker_shortcut = "Ctrl+Alt+Shift+H"
+def _add_cloze_hide_all_marker(editor: Editor) -> None:
+    editor.web.eval("setFormat('inserthtml', '<img src=_cha_cha-enable.png>');")
 
-    def add_cloze_hide_all_marker(editor: Editor) -> None:
-        editor.web.eval("setFormat('inserthtml', '<img src=_cha_cha-enable.png>');")
+
+def _add_conditional_visible_cloze_area(editor: Editor) -> None:
+    editor.web.eval("wrap('<div class=\"cz_on_active\">', '</div>');")
+
+
+def add_buttons(buttons: List[str], editor: Editor) -> None:
 
     buttons.append(
         editor.addButton(
             icon=None,
             cmd=f"add_cloze_hide_all_marker",
-            func=add_cloze_hide_all_marker,
-            tip="Add CHA reveal button here",
+            func=_add_cloze_hide_all_marker,
+            tip="Add CHA reveal button here (%s)" % getConfig("cha_marker_shortcut"),
             label="█ CHA",
-            keys=cha_marker_shortcut,
         )
     )
-
-    def add_conditional_visible_cloze_area(editor: Editor) -> None:
-        editor.web.eval("wrap('<div class=\"cz_on_active\">', '</div>');")
 
     buttons.append(
         editor.addButton(
             icon=None,
             cmd=f"add_conditional_visible_cloze_area",
-            func=add_conditional_visible_cloze_area,
-            tip="Make this note like 'Cloze (Hide All)'",
+            func=_add_conditional_visible_cloze_area,
+            tip="Add conditional CHA visible area (%s)"
+            % getConfig("cha_conditional_zone_shortcut"),
             label="『cond』",
-            keys=None,
+        )
+    )
+
+
+def setup_shortcuts(shortcuts, editor):
+    shortcuts.append(
+        (getConfig("cha_marker_shortcut"), lambda: _add_cloze_hide_all_marker(editor))
+    )
+    shortcuts.append(
+        (
+            getConfig("cha_conditional_zone_shortcut"),
+            lambda: _add_conditional_visible_cloze_area(editor),
         )
     )
 
 
 gui_hooks.editor_did_init_buttons.append(add_buttons)
+gui_hooks.editor_did_init_shortcuts.append(setup_shortcuts)
 
 
 # code from https://github.com/ijgnd/anki__editor__apply__font_color__background_color__custom_class__custom_style/blob/master/src/editor/webview.py#L6

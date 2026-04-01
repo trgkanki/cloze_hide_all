@@ -25,6 +25,14 @@ model update.
 
 Always turn on 'Hide others on the back side' option for all cloze cards.
 
-# shortcutToggleMask (default: `"ctrl+r"`)
+# shortcutToggleMask (default: `"Ctrl+R"`)
 
 Shortcut for `Toggle Mask` button.
+
+# cha_marker_shortcut (default: `"Ctrl+Shift+Alt+Q"`)
+
+Shortcut to add CHA marker.
+
+# cha_conditional_zone_shortcut (default: `"Ctrl+Shift+Alt+W"`)
+
+Shortcut to add conditional CHA zone

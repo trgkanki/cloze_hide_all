@@ -3,6 +3,8 @@
   "clozeHideAllModelNames": [],
   "noModelMigration": false,
   "alwaysHideback": false,
-  "shortcutToggleMask": "ctrl+r",
+  "shortcutToggleMask": "Ctrl+R",
+  "cha_marker_shortcut": "Ctrl+Shift+Alt+Q",
+  "cha_conditional_zone_shortcut": "Ctrl+Shift+Alt+W",
   "debug": false
 }
