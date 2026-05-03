@@ -24,17 +24,18 @@
 import re
 import os
 import time
+import traceback
 
 from aqt.editor import Editor
 from aqt.reviewer import Reviewer
-from aqt import gui_hooks, mw
+from aqt import gui_hooks
 from anki.hooks import wrap
-from anki.hooks import note_will_flush
-from aqt.utils import tooltip
+from anki import hooks
+from anki.notes import Note
 
 from typing import List
 
-from .htmlApplier import stripClozeTags, applyClozeTags
+from .htmlApplier import stripClozeTags, applyClozeTags, ClozeIdState
 from .clozeHideAllModel import registerClozeModel
 from .model.consts import model_name
 from .model.migrator.common import (
@@ -46,6 +47,7 @@ from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .utils import openChangelog
 from .utils import uuid  # duplicate UUID checked here
+from .utils import debugLog
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #
@@ -58,26 +60,11 @@ gui_hooks.profile_did_open.append(registerClozeModel)
 
 ## Hooks
 
-# Hide 'hideback' field on note load
-
 
 def isNoteClozeHideAllType(note):
     noteModelName = note.model()["name"]
     extraModelNames = getConfig("clozeHideAllModelNames")
     return noteModelName == model_name or noteModelName in extraModelNames
-
-
-# Apply CHA code before save
-
-
-def findFieldsInTemplate(template: str) -> List[str]:
-    fields: List[str] = []
-    for m in re.findall(r"\{\{(?:.+?::?)?(.+?)\}\}", template):
-        # skip conditional rendering
-        if m[0] == "#" or m[0] == "/":
-            continue
-        fields.append(m)
-    return fields
 
 
 def beforeNoteFlush(note):
@@ -90,19 +77,13 @@ def beforeNoteFlush(note):
                 useCHA = "card"
                 break
 
-    if useCHA:
-        qFields: List[str] = []
-        aFields: List[str] = []
-        if useCHA == "card":
-            model = mw.col.models.get(note.mid)
-            template = model["tmpls"][0]
-            qFields = findFieldsInTemplate(template["qfmt"])
-            aFields = findFieldsInTemplate(template["afmt"])
+    state = ClozeIdState()
 
+    if useCHA:
         for key in note.keys():
             html = note[key]
             html = stripClozeTags(html)
-            html = applyClozeTags(html)
+            html = applyClozeTags(html, state)
 
             if useCHA == "card":
                 html = hidebackBlock.remove(html)
@@ -121,22 +102,7 @@ def beforeNoteFlush(note):
             note[key] = html
 
 
-note_will_flush.append(beforeNoteFlush)
-
-
-#### Hook for HTML edit
-
-
-def _newOnHtmlEdit(self, field, *, _old):
-    # Temporarily strip CHA-related tags
-    self.note.fields[field] = stripClozeTags(self.note.fields[field])
-    ret = _old(self, field)
-    self.note.fields[field] = applyClozeTags(self.note.fields[field])
-    return ret
-
-
-# Fix for 2.1.46+ needed.
-Editor._onHtmlEdit = wrap(Editor._onHtmlEdit, _newOnHtmlEdit, "around")
+hooks.note_will_flush.append(beforeNoteFlush)
 
 
 ## Support for 'reveal' shortcut
@@ -163,7 +129,6 @@ def _add_conditional_visible_cloze_area(editor: Editor) -> None:
 
 
 def add_buttons(buttons: List[str], editor: Editor) -> None:
-
     buttons.append(
         editor.addButton(
             icon=None,

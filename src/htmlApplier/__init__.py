@@ -3,12 +3,12 @@
 
 import re
 
-from .wrapClozeTags import wrapClozeTag
+from .wrapClozeTags import wrapClozeTag, ClozeIdState
 from .stripClozeTags import stripClozeTags
 from ..utils import debugLog
 
 
-def applyClozeTags(html):
+def applyClozeTags(html, state: ClozeIdState):
     def _(match):
         clozeNumber = int(match.group(1))
         clozeContent: str = match.group(2)
@@ -71,7 +71,9 @@ def applyClozeTags(html):
                 % (clozeNumber, clozeRevealCondition)
             )
             clozeRevealCondition = clozeRevealCondition[:-1]  # strip last ! or ?
-        output.append(wrapClozeTag(clozeContent, clozeNumber, clozeRevealCondition))
+        output.append(
+            wrapClozeTag(clozeContent, clozeNumber, state, clozeRevealCondition)
+        )
         output.append(clozeCaption)
         output.append("}}")
         return "".join(output)
