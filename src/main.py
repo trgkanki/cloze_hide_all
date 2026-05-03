@@ -142,7 +142,7 @@ Editor._onHtmlEdit = wrap(Editor._onHtmlEdit, _newOnHtmlEdit, "around")
 ## Support for 'reveal' shortcut
 def newShortuts(self, *, _old):
     def _():
-        self.web.eval("toggle()")
+        self.web.eval("toggleCHA()")
 
     shortcuts = _old(self)
     shortcuts.append((getConfig("shortcutToggleMask", "ctrl+r"), _))

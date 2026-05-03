@@ -31,18 +31,19 @@ setTimeout(function () {
     document.head.appendChild(styleEl)
   }
 
-  const toggleButton = document.createElement('button')
-  toggleButton.id = 'cloze2-toggle'
-  toggleButton.innerHTML = 'Toggle mask'
-  toggleButton.addEventListener('click', function () {
+  function toggleCHA () {
     const elements = document.querySelectorAll('cloze2, cloze2_w')
     for (let i = 0; i < elements.length; i++) {
       elements[i].classList.toggle('reveal-cloze2')
     }
-  })
+  }
 
-  const hideAllMarker =
-      document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0]
+  const toggleButton = document.createElement('button')
+  toggleButton.id = 'cloze2-toggle'
+  toggleButton.innerHTML = 'Toggle mask'
+  toggleButton.addEventListener('click', toggleCHA)
+
+  const hideAllMarker = document.querySelectorAll('img[src="_cha_cha-enable.png"]')[0]
   if (hideAllMarker) {
     hideAllMarker.parentNode.insertBefore(toggleButton, hideAllMarker)
   } else {
@@ -50,4 +51,6 @@ setTimeout(function () {
         document.getElementsByClassName('cha-hideback-js')[0]
     firstScriptElement.parentNode.insertBefore(toggleButton, firstScriptElement)
   }
+
+  window.toggleCHA = toggleCHA
 }, 0)
