@@ -33,8 +33,7 @@ def showChangelogOnUpdate():
 
     addonMeta = mw.addonManager.addonMeta(addonName)
     if addonMeta.get("human_version", None) != addonVersion:
-        if askUser(
-            """IMPORTANT!!
+        if askUser("""IMPORTANT!!
 
 This addon has a history of breaking user cards during migration steps.\
 If your addon is working well, ***We recommend just pressing YES here***.
@@ -43,8 +42,7 @@ But if your addon doesn't, new addon *might* contain a migration to fix\
 your current issue, so we recommend presssing *no* here.
 
 Would you like to prevent addon from auto-migrating your templates?
-"""
-        ):
+"""):
             showInfo(
                 "You can always issue migration on addon config. Check out the `noModelMigration` option."
             )

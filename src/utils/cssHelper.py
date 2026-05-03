@@ -1,6 +1,5 @@
 import re
 
-
 # Code from https://stackoverflow.com/questions/222581/python-script-for-minifying-css
 # modified
 
