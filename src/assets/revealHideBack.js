@@ -32,7 +32,7 @@ setTimeout(function () {
   }
 
   function toggleCHA () {
-    const elements = document.querySelectorAll('cloze2, cloze2_w')
+    const elements = document.querySelectorAll('cloze2, cloze2_w, .cz_on_active')
     for (let i = 0; i < elements.length; i++) {
       elements[i].classList.toggle('reveal-cloze2')
     }

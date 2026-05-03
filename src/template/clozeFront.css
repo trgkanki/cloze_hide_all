@@ -22,11 +22,11 @@ img[src="_cha_cha-enable.png"] {
   display: none;
 }
 
-.cz_on_active:not(:has(.cloze, .reveal-cloze2)) {
+.cz_on_active:not(:has(.cloze, .reveal-cloze2)):not(.reveal-cloze2) {
   display: none;
 }
 
-.cz_on_active:not(:has(.cloze)):has(.reveal-cloze2) {
+.cz_on_active:not(:has(.cloze)) {
   outline: 2px dashed #38f;
   outline-offset: -1px;
   padding: .1em;
