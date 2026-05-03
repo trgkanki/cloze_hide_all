@@ -67,22 +67,6 @@ def isNoteClozeHideAllType(note):
     return noteModelName == model_name or noteModelName in extraModelNames
 
 
-def onSetNote(self, note, hide=True, focus=False):
-    if not self.web:
-        return
-
-    if self.note and isNoteClozeHideAllType(self.note):
-        if getConfig("alwaysHideback"):
-            hidebackJS = readResource("assets/hideHidebackField.js")
-            self.web.eval(hidebackJS)
-
-
-if hasattr(Editor, "set_note"):  # 2.1.46+ fix
-    Editor.set_note = wrap(Editor.set_note, onSetNote, "after")
-    Editor.setNote = Editor.set_note
-else:
-    Editor.setNote = wrap(Editor.setNote, onSetNote, "after")
-
 # Apply CHA code before save
 
 
