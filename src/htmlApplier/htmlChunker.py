@@ -1,7 +1,6 @@
-from html.parser import HTMLParser
 import re
-import json
 
+# Input is expected to be valid HTML emitted by Anki's contenteditable editor.
 
 _voidElements = {
     "area",
@@ -58,8 +57,8 @@ def tokenizeHTML(s):
         tagCh[:] = []
 
         # Process starting tag & Ending tag
-        tagStartMatch = re.match("<\s*([a-zA-Z0-9]+)", tag)
-        tagEndMatch = re.match("<\s*/\s*([a-zA-Z0-9]+)", tag)
+        tagStartMatch = re.match(r"<\s*([a-zA-Z0-9]+)", tag)
+        tagEndMatch = re.match(r"<\s*/\s*([a-zA-Z0-9]+)", tag)
 
         if tagStartMatch:
             chunks.append(("tstart", tag, tagStartMatch.group(1).lower()))
@@ -153,15 +152,11 @@ def optimizeChunks(chunks):
         chunks = transform_concatProperlyClozedTag(chunks)
         chunks = transform_concatAdjacentData(chunks)
         chunks = transform_removeEmptyChunk(chunks)
-        if jsonEq(oldChunks, chunks):
+
+        if oldChunks == chunks:
             break
 
     return chunks
-
-
-def jsonEq(o1, o2):
-    """ Simple json-based comparator of procratinator. Anyway it works """
-    return json.dumps(o1) == json.dumps(o2)
 
 
 if __name__ == "__main__":
