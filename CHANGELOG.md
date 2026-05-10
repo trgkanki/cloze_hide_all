@@ -7,6 +7,14 @@ If you encounter any bugs, submit through [Github issues](https://github.com/trg
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 26.5.10i42 (2026-05-10)
+
+- Feature: added conditional visibility. A conditional block will only be visible if the cloze with in the block is being tested. Useful
+- Fix: inability to edit cards when more than two editor is open (ex: Browser + Edit Card)
+- Fix: toggle key implementation.
+- Fix: 'toggle mask' button sometimes visible on front side.
+- Fix: allow `}` appear within a cloze.
+
 ## 25.9.3i145 (2025-09-03)
 
 - hotfix: breaking cloze (hide all) cards
